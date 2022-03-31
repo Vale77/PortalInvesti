@@ -1,0 +1,53 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:focus context="pnlGrid" />
+    <p:panelGrid id="pnlGrid" columns="2"  styleClass="ui-panelgrid-blank form-group">
+        <p:outputLabel for="selectOneMenuCodigo" value="Código:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:selectOneMenu id="selectOneMenuCodigo" value="#{estadoValBean.inveEstadoValEdit.esvCodigo}"  styleClass="ui-selectonemenuUASB"
+                             required="true" requiredMessage="Código obligatorio" >
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                <f:selectItem itemLabel="a)" itemValue="a"/>
+                <f:selectItem itemLabel="b)" itemValue="b"/>
+                <f:selectItem itemLabel="c)" itemValue="c"/>
+                <f:selectItem itemLabel="d)" itemValue="d"/>
+                <f:selectItem itemLabel="1)" itemValue="1"/>
+                <f:selectItem itemLabel="2)" itemValue="2"/>
+                <f:selectItem itemLabel="3)" itemValue="3"/>                
+            </p:selectOneMenu> 
+            <p:message for="selectOneMenuCodigo" display="icon" />
+        </p:panelGrid>
+        <p:outputLabel for="estado" value="Estado:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:inputText id="estado" value="#{estadoValBean.inveEstadoValEdit.esvEstado}" autocomplete="off"  required="true"
+                         requiredMessage="Estado obligatorio" style="width: 175px;" maxlength="60"
+                         onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputText>
+            <p:message for="estado" display="icon" />
+        </p:panelGrid>
+        <p:outputLabel for="descrip" value="Descripción estado:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:inputText id="descrip" value="#{estadoValBean.inveEstadoValEdit.esvDescripcion}" autocomplete="off"  required="true"
+                         requiredMessage="Descripción del estado obligatorio" style="width: 600px;"
+                         onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputText>
+            <p:message for="descrip" display="icon" />
+        </p:panelGrid>
+        <p:outputLabel for="selectOneMenuRol" value="Rol:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:selectOneMenu id="selectOneMenuRol" value="#{estadoValBean.inveEstadoValEdit.inveRol}"  styleClass="ui-selectonemenuUASB"
+                             converter="rolConverter">
+                <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{estadoValBean.listaRoles}" var="rol" itemValue="#{rol}" itemLabel="#{rol.rolDescripcion}" 
+                               itemDescription="#{''.concat(rol.rolCodigo)}"/>
+            </p:selectOneMenu> 
+            <p:message id="messageRol" for="selectOneMenuRol" display="icon" />
+        </p:panelGrid>
+    </p:panelGrid>
+</ui:composition>

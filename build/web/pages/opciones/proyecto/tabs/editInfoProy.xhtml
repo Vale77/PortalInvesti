@@ -1,0 +1,60 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        .colAncho175{width: 175px;}
+    </style>
+    <p:panel styleClass="panelTab">
+        <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho175 colorLabel,," >
+            <p:outputLabel for="titulo" value="Título:" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:80px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="titulo" rows="4" cols="90" value="#{forma.inveProyectoEdit.pryTitulo}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Título obligatorio" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextTitulo" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="105">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                        </p:inputTextarea>
+                        <p:message for="titulo" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextTitulo" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>
+            <p:outputLabel for="objetivoGen" value="Objetivo general:" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:135px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="objetivoGen" rows="7" cols="90" value="#{forma.inveProyectoEdit.pryObjetivoGen}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Objetivo general es obligatorio" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextObjetivoGen" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="105">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                        </p:inputTextarea>
+                        <p:message for="objetivoGen" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextObjetivoGen" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>
+            <p:outputLabel for="objetivoEsp" value="Objetivos específicos:" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:135px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="objetivoEsp" rows="7" cols="90" value="#{forma.inveProyectoEdit.pryObjetivoEsp}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Objetivos específicos son obligatorios" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextObjetivoEsp" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="105">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                        </p:inputTextarea>
+                        <p:message for="objetivoEsp" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextObjetivoEsp" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>        
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

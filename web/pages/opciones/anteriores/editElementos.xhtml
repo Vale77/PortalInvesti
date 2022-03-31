@@ -1,0 +1,139 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        .verticalLabelTop{vertical-align: top}
+    </style>
+    <p:scrollPanel mode="native" style="width:101%;height:400px">
+        <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho150 colorLabel verticalLabelTop,,">
+            <p:outputLabel for="selectOneMenuArea" value="Área académica:" />
+            <p:panelGrid columns="2" >
+                <p:selectOneMenu id="selectOneMenuArea" value="#{formularioBean.areaCodigo}" tabindex="100"  styleClass="ui-selectonemenuUASB"
+                                 required="true" requiredMessage="Área académica obligatoria">
+                    <f:selectItem itemLabel="Seleccione una..." itemValue="" noSelectionOption="true"/>
+                    <f:selectItems value="#{formularioBean.listaAreas}" var="area" itemValue="#{area.areaCodigo}" itemLabel="#{area.areaNombre}" 
+                                   itemDescription="#{''.concat(area.areaCodigo)}"/>
+                    <p:ajax  event="change" process="@this" update="messageArea" />
+                </p:selectOneMenu> 
+                <p:message id="messageArea" for="selectOneMenuArea" display="icon" />
+            </p:panelGrid>
+            <p:outputLabel for="titulo" value="Título:" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="titulo" rows="6" cols="90" value="#{formularioBean.inveProyecto.pryTitulo}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Título obligatorio" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextTitulo" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="105">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                        </p:inputTextarea>
+                        <p:message for="titulo" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextTitulo" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>
+            <p:outputLabel for="justif" value="Justificación institucional y académica:" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="justif" rows="6" cols="90" value="#{formularioBean.inveProyecto.pryJustificacion}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Justificación institucional y académica obligatorio"
+                                         onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextJustif" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="110">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                            <p:watermark for="justif" id="watermarkDirJustif"
+                                         value="(Describa como se alinea el proyecto con la misión, visión institucional e importancia para la UASB y señale como se ajusta éste proyecto a las líneas de investigación del área, programas, catedras, talleres u observatorios al que pertenece)" />
+                        </p:inputTextarea>
+                        <p:message for="justif" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextJustif" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>
+            <p:outputLabel for="relev" value="Relevancia científica:" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="relev" rows="6" cols="90" value="#{formularioBean.inveProyecto.pryRelevancia}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Relevancia científica obligatorio" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextRelev" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="115">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                            <p:watermark for="relev" value="(Señale cuál es el aporte al conocimiento científico que pretende alcanzar en el campo de investigación específico que incribe este proyecto)" id="watermarkDirRelev" />
+                        </p:inputTextarea>
+                        <p:message for="relev" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextRelev" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>
+            <p:outputLabel for="objetivos" value="Objetivos: general y específicos" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="objetivos" rows="6" cols="90" value="#{formularioBean.inveProyecto.pryObjetivoGen}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Objetivos: general y específicos obligatorio"
+                                         onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextObj" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="120">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                        </p:inputTextarea>
+                        <p:message for="objetivos" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextObj" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>
+            <p:outputLabel for="problema" value="Planteamiento del problema de investigación" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="problema" rows="6" cols="90" value="#{formularioBean.inveProyecto.pryObjetivoGen}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Planteamiento del problema de investigación obligatorio"
+                                         onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextProb" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="125">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                            <p:watermark for="problema" value="(incluya las preguntas de investigación)" id="watermarkDirProb" />
+                        </p:inputTextarea>
+                        <p:message for="problema" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextProb" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>    
+            <p:outputLabel for="metodologia" value="Metodología" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="metodologia" rows="6" cols="90" value="#{formularioBean.inveProyecto.pryMetodologia}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Metodología obligatoria" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextMeto" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="130">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                            <p:watermark for="metodologia" value="(Describa cómo va a desarrollar la investigación y las técnicas que va a utilizar )" id="watermarkDirMetod" />
+                        </p:inputTextarea>
+                        <p:message for="metodologia" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextMeto" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>          
+            <p:outputLabel for="planIni" value="Plan inicial de contenidos" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="planIni" rows="6" cols="90" value="#{formularioBean.inveProyecto.pryPlanInicial}" style="color: #2196F3;width: 100%;" 
+                                         required="true" requiredMessage="Metodología obligatoria" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         counter="displayTextPlanIni" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="135">
+                            <p:ajax event="change"/>
+                            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                        </p:inputTextarea>
+                        <p:message for="planIni" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextPlanIni" style="color: brown;font-size: 12px;font-weight: bold"/>
+            </p:panelGrid>                        
+        </p:panelGrid>
+    </p:scrollPanel>
+</ui:composition>

@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../../WEB-INF/template.xhtml"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{regPryBean}"/>
+    </ui:define>
+    
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            .campoNoEditado.ui-state-disabled {font-weight: bold;background-color: #dbdbdb;opacity: 1.0;color: black}
+            body.layout-compact .ui-button.ui-button-icon-only{width: 24px;height: 24px}
+            body.layout-compact .ui-selectonemenuUASB .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            .ui-selectonemenuUASB.ui-state-disabled{background-color: #dbdbdb;opacity: 1.0;}
+            body.layout-compact .ui-wizard .ui-wizard-step-titles > li {padding: 3px 8px; font-size: 12px}
+            body.layout-compact .ui-wizard .ui-wizard-step-titles > li.ui-state-highlight{background-color: #f3ae08;border-bottom: 0px solid #f3ae08;font-weight:bold}
+            body.layout-compact .ui-button{font-size:12px;height:26px}
+            .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 1px 5px;}
+            .ui-panelgrid-blankForm{width: 95%;}
+            .ui-panelgrid.form-group .ui-panelgrid-cell{padding: 1px 5px;}
+            .ui-panelgridPreFrm.form-group{width: 950px;}     
+            body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;font-size: 12px;color: blue}
+            .calendario .ui-inputfield.ui-state-disabled {font-weight: bold;background-color: #dbdbdb;opacity: 1.0;}
+            body.layout-compact .ui-panel .ui-panel-titlebar{padding: 0px 10px;font-size: 12px}
+
+            body.layout-compact .panelTab .ui-panel-content{padding: 0px 0px;}
+            body.layout-compact .panelTab {height: 450px; border-style: none !important}
+
+            .colAncho150{width: 150px;}
+            .colAncho40{width: 40px}
+            .colAncho300{width: 300px}
+            ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+                color:    #909; font-size: 12px
+            }
+            :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+                color:    #909;font-size: 12px; opacity:  1;
+            }
+            ::-moz-placeholder { /* Mozilla Firefox 19+ */
+                color:    #909;font-size: 12px; opacity:  1;
+            }
+            :-ms-input-placeholder { /* Internet Explorer 10-11 */
+                color:    #909;font-size: 12px; 
+            }
+            ::-ms-input-placeholder { /* Microsoft Edge */
+                color:    #909;font-size: 12px; 
+            }
+            ::placeholder { /* Most modern browsers support this now. */
+                color:    #909;font-size: 12px; 
+            }
+            .ubicaBoton1{width: 80%} .ubicaBoton2{width: 10%}
+            .cke_top {background-color: beige !important;}
+
+        </style>
+        <script type="text/javascript" >
+            function resetCombos() {
+                PF('widgetVarTipo').selectValue('');
+                PF('widgetVarNac').selectValue('');
+                PF('widgetVarPai').selectValue('');
+                PF('widgetVarCiu').selectValue('');
+            }
+        </script>
+        <ui:param name="forma" value="#{regPryBean}"/>
+        <!--f:viewAction action="#{regPryBean.verificarAcceso}"/-->
+        <f:event type="preRenderView" listener="#{regPryBean.verificarAcceso}"/>
+    </ui:define>
+    <ui:define name="content">
+        <div class="ui-g-12">
+            <div class="card">
+                <h:form id="form" >
+                    <!--p:remoteCommand  autoRun="true"  immediate="true" oncomplete="resetCombos();"/-->
+                    <p:remoteCommand action="#{regPryBean.setCambio()}" immediate="true" partialSubmit="true" name="cambioRealizado"/>
+                    <p:focus context="pnlGrid" />
+                    <p:panelGrid id="pnlGrid" columns="1" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group" >
+                        <p:wizard id="wizardPry" flowListener="#{regPryBean.onFlowProcess}"  backLabel="Anterior" nextLabel="Siguiente"   widgetVar="widgetVarWizardPry">
+                            <p:tab id="datos" title="1. DATOS INVESTIGADOR">
+                                <p:remoteCommand name="setfocoNroDoc" immediate="true" oncomplete="document.getElementById('form:inputTextNroDoc').focus();"/>
+                                <p:remoteCommand name="setfocoEmail"  immediate="true" oncomplete="document.getElementById('form:inputTextMail').focus();"/>
+                                <p:remoteCommand name="setfocoNombre" immediate="true" oncomplete="document.getElementById('form:inputTextNombre').focus();"/>                   
+                                <ui:include src="/pages/opciones/proyecto/tabs/editDatosPerso.xhtml"/>
+                            </p:tab>
+                            <p:tab id="infoProy" title="2. TÍTULO Y OBJETIVOS">
+                                <ui:include src="/pages/opciones/proyecto/tabs/web/editInfoProy.xhtml"/>
+                            </p:tab>            
+                            <p:tab id="justificacion" title="3. JUSTIFICACIÓN" >
+                                <ui:include src="/pages/opciones/proyecto/tabs/web/editJustif.xhtml"/>
+                            </p:tab>
+                            <p:tab id="relev" title="4. RELEVANCIA" >
+                                <ui:include src="/pages/opciones/proyecto/tabs/web/editRelev.xhtml"/>
+                            </p:tab>                                
+                            <p:tab id="planteam" title="5. PLANTEAMIENTO" >
+                                <ui:include src="/pages/opciones/proyecto/tabs/web/editPlant.xhtml"/>
+                            </p:tab>                                
+                            <p:tab id="metodologia" title="6. METODOLOGÍA" >
+                                <ui:include src="/pages/opciones/proyecto/tabs/web/editMetod.xhtml"/>
+                            </p:tab> 
+                            <p:tab id="planIni" title="7. PLAN INICIAL CONTENIDOS" >
+                                <ui:include src="/pages/opciones/proyecto/tabs/web/editPlanIni.xhtml"/>
+                            </p:tab> 
+                            <p:tab id="infoAdic" title="8. INFO. ADICIONAL">
+                                <ui:include src="/pages/opciones/proyecto/tabs/editInfoAdic.xhtml"/>
+                            </p:tab>
+                            <p:tab id="envio" title="9. ENVÍO">
+                                <ui:include src="/pages/opciones/proyecto/tabs/web/editPreCheck.xhtml"/>
+                            </p:tab>                    
+                        </p:wizard>
+                    </p:panelGrid>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

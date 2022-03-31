@@ -1,0 +1,60 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pu="http://primefaces.org/ultima">
+
+    <div class="topbar clearfix">
+        <div class="topbar-left">            
+            <div class="logo"></div>
+        </div>
+
+        <div class="topbar-right">
+            <a id="menu-button" href="#">
+                <i></i>
+            </a>
+
+            <a id="topbar-menu-button" href="#">
+                <i class="material-icons">&#xE851;</i>
+            </a>
+
+            <ul class="topbar-items fadeInDown animated">
+                <ui:fragment rendered="#{guestPreferences.profileMode == 'overlay'||guestPreferences.menuLayout == 'menu-layout-static menu-layout-horizontal'}">
+                    <li class="profile-item">
+                        <a href="#" title="Mi cuenta">                            
+                            <div class="profile-image"></div>
+                            <span class="topbar-item-name">Mi cuenta</span>
+                        </a>
+                        <ul class="ultima-menu animated">
+                            <li role="menuitem">
+                                <a href="#">
+                                    <i class="material-icons">&#xE7FD;</i>
+                                    <span>Perfil</span>
+                                </a>
+                            </li>
+                            <li role="menuitem">
+                                <a href="#">
+                                    <i class="material-icons">&#xE8B9;</i>
+                                    <span>Configuración</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="profile-item">
+                        <p:commandLink action="#{loginMgmtBean.logout()}" title="Salir">
+                            <i class="topbar-icon material-icons">&#xE8AC;</i>
+                            <span class="topbar-item-name">Salir</span>
+                        </p:commandLink>
+                    </li>  
+                    <li class="title-sistema">
+                        <label>Portal Gestión de Investigaciones</label>
+                    </li>
+                </ui:fragment>
+
+            </ul>
+        </div>
+    </div>
+
+</ui:composition>

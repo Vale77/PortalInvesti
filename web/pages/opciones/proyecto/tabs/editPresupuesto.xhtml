@@ -1,0 +1,75 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        body.layout-compact .ui-button.ui-button-icon-only{width: 20px;height: 20px}
+        body.layout-compact .ui-dataTable-Pres.ui-datatable-scrollable thead tr th{font-size: 12px;background-color: #e8e1e1;padding: 3px 5px;}
+        body.layout-compact .ui-dataTable-Pres tbody tr td{padding: 3px 5px;font-size: 12px;}
+        body.layout-compact .ui-dataTable-Pres tbody tr.ui-widget-content td{padding: 3px 5px;}
+        body.layout-compact .ui-dataTable-Pres .ui-datatable-summaryrow{font-size: 13px;text-align: right}
+        .ui-inputfieldNumeros{text-align: center}
+    </style>
+    <p:remoteCommand name="refreshAddBoton" update="formEdit:dataTablePresup" />
+    <p:dataTable id="dataTablePresup" var="rubro" value="#{forma.listaPresup}"  scrollable="true" scrollHeight="300" 
+                 rowKey="#{rubro.invePresupuestoPK}" widgetVar="widgetVarDataTablePresup" rowIndexVar="ordinal" styleClass="ui-dataTable-Pres"
+                 sortBy="#{1}" emptyMessage="No ha registrado rubro algúno en este proyecto" editable="true" >
+        <p:ajax event="rowEditInit" listener="#{forma.rowEditInit}" oncomplete="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','hidden')});"/>
+        <p:ajax event="rowEdit" oncomplete="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','visible')});refreshAddBoton();" />
+        <p:ajax event="rowEditCancel"  onstart="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','visible')});"/>
+        <p:column headerText="N°" width="2%" style="text-align: center">
+            <h:outputText value="#{ordinal+1}" />                                                
+        </p:column>         
+        <p:column headerText="Rubro"  width="20%" >
+            <h:outputText value="#{rubro.inveRubro.rubNombre}" style="color: blue" styleClass="colorLabel"/>
+        </p:column>
+        <p:column headerText="Descripción"  width="65%" >
+            <p:cellEditor>
+                <f:facet name="output">
+                    <h:outputText value="#{rubro.preDescripcion}" />
+                </f:facet>
+                <f:facet name="input">
+                    <p:inputText id="inputDescrip" value="#{rubro.preDescripcion}" autocomplete="off"  required="true"
+                                 requiredMessage="Descripción del rubro obligatorio" style="width: 95%;"
+                                 onfocus="this.setSelectionRange(0, this.value.length)">
+                        <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                    </p:inputText>
+                </f:facet>  
+            </p:cellEditor>
+        </p:column>
+        <p:column headerText="Monto" width="8%">
+            <p:cellEditor>
+                <f:facet name="output">
+                    <div align="right">
+                        <h:outputFormat value="$ {0}" style="font-weight: bold;color:blue;" rendered="#{rubro.preMontoAprob ne null}" >
+                            <f:param value="#{rubro.preMontoAprob}"/>
+                        </h:outputFormat>
+                    </div>
+                </f:facet>
+                <f:facet name="input">
+                    <p:inputNumber id="monto" value="#{rubro.preMontoAprob}" autocomplete="off" style="text-align: center" 
+                                   inputStyleClass="ui-inputfieldNumeros" required="true" requiredMessage="Monto obligatorio"
+                                    decimalSeparator="." decimalPlaces="2"
+                                   symbol="$" thousandSeparator="," size="8"
+                                   onfocus="this.setSelectionRange(0, this.value.length)"/>
+                </f:facet>
+            </p:cellEditor>
+        </p:column>   
+        <p:column headerText="Editar" width="5%" style="text-align: center">
+            <p:rowEditor/>
+        </p:column>            
+        <p:summaryRow id="total">
+            <p:column colspan="3">
+                <h:outputText value="Total:" />
+            </p:column>
+            <p:column>
+                <h:outputFormat value="$ {0}" >
+                    <f:param value="#{forma.sumaTotal}"/>
+                </h:outputFormat>
+            </p:column>
+        </p:summaryRow>
+    </p:dataTable>  
+</ui:composition>

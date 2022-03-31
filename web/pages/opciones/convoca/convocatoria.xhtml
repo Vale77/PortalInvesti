@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{convoBean}"/>
+    </ui:define>
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{convoBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            body.layout-compact .ui-button.ui-button-icon-only{width: 24px;height: 24px}
+            body.layout-compact .ui-selectonemenuUASB .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            body.layout-compact .ui-dataTable-convo tbody tr {font-size: 12px;}
+            body.layout-compact .ui-dataTable-convo thead tr th{font-size: 13px;background-color: #e8e1e1;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;font-size: 14px}
+            body .ui-datatable tbody tr.ui-datatable-odd.ui-state-highlight{background-color: #f3ae08;} 
+            .ui-panelgridSeleccion{font-size: 12px}
+            .ui-panelgridSeleccion.form-group .ui-panelgrid-cell{padding: 5px 5px;}
+        </style>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Convocatorias</h3>
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgridSeleccion form-group">
+                    <p:outputLabel for="selectOneMenuAnio" value="Año académico:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuAnio" value="#{convoBean.anio}" tabindex="2"  styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{convoBean.listaAnios}" var="anio" itemValue="#{anio.anio}" itemLabel="#{anio.nombreCiclo}"/>
+                        <p:ajax  update="@form,formConvo,formMenuBar" listener="#{convoBean.retrieveBy}" resetValues="true"
+                                 oncomplete="PF('widgetConvo').clearFilters();PF('widgetConvo').filter();"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+            </div>
+        </h:form>
+          
+        <h:form id="formConvo">
+            <p:dataTable id="dataTableConvo" var="convo" value="#{convoBean.listaConvocatorias}" selectionMode="single" reflow="true" styleClass="ui-dataTable-convo"
+                         selection="#{convoBean.convocatoriaSelected}" rowKey="#{convo.cvoCodigo}" widgetVar="widgetConvo" scrollable="true" scrollHeight="350"
+                         filteredValue="#{convoBean.listaConvofiltered}"
+                         emptyMessage="#{convoBean.anio eq null ? 'Seleccione parámetros de consulta' : convoBean.listaConvocatorias.size() == 0 ?'No existen registros con estos parámetros':''}">
+                <p:ajax event="rowSelect" process="@this" update="@this" listener="#{convoBean.onRowSelect}"/>
+                <p:ajax event="rowUnselect" process="@this" update="@this" listener="#{convoBean.onRowUnselect}"/>
+                <p:ajax event="filter" listener="#{convoBean.onFilter}"/> 
+                <p:column headerText="Código" width="5%" style="text-align: center">
+                    <h:outputText value="#{convo.cvoCodigo}"/>
+                </p:column> 
+                <p:column headerText="Año" width="5%" style="text-align: center">
+                    <h:outputText value="#{convo.cvoAnioAcad}"/>
+                </p:column>                
+                <p:column headerText="Tipo convocatoría" width="10%" filterBy="#{convo.inveTipoConvocatoria.tcvNombre}">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('widgetConvo').filter()" styleClass="ui-selectonemenuUASB"  style="min-width: 90%">
+                            <f:selectItem itemLabel="Todas.." itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{convoBean.listaTipoConvo}" var="tipo" itemValue="#{tipo.tcvNombre}" itemLabel="#{tipo.tcvNombre}"/>
+                        </p:selectOneMenu>
+                    </f:facet> 
+                    <h:outputText value="#{convo.inveTipoConvocatoria.tcvNombre}"/>
+                </p:column>
+                <p:column headerText="Grupo de enfoque" width="54%">
+                    <h:outputText value="#{convo.grupos}" escape="false"/>
+                </p:column>                
+                <p:column headerText="Inicio" width="10%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{convo.cvoFechaInicio ne null}">
+                        <f:param value="#{convo.cvoFechaInicio}"/>
+                    </h:outputFormat>         
+                </p:column>         
+                <p:column headerText="Final" width="10%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{convo.cvoFechaFin ne null}">
+                        <f:param value="#{convo.cvoFechaFin}"/>
+                    </h:outputFormat>                      
+                </p:column>  
+                <p:column headerText="Estado" width="6%" style="text-align: center">
+                    <h:outputText value="#{convo.cvoEstado eq 'I' ? 'No ejecutada' : convo.cvoEstado eq 'A' ?'Abierta':'Cerrada'}"
+                                  styleClass="colorLabel"
+                                  style="color:#{convo.cvoEstado eq 'I' ? 'blue' : convo.cvoEstado eq 'A' ?'green':'red'}"/>
+                </p:column>                  
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+
+</ui:composition>

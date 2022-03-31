@@ -1,0 +1,137 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        .colAncho200{width: 200px;}
+        .ui-selectoneradio label{font-size: 14px;font-weight: bold;color: darkblue}
+        .ui-panelgridUno.form-group .ui-panelgrid-cell.ui-widget-header{background-color:#A5D6A7;border-color:white; color: darkblue}
+        .ui-panelgridUno.form-group .ui-panelgrid-cell{padding: 3px 3px}
+        .ui-panelgridUno.form-group {width: 100%}
+        .ui-separator{color:red}
+    </style>
+    <p:panel styleClass="panelTab" style="width: 900px;">
+        <p:panelGrid columns="2" styleClass="ui-panelgrid-blank ui-panelgridUno form-group" columnClasses="colAncho200 colorLabel,,">
+            <p:outputLabel for="selectOneMenuGrupoInvest" value="Grupo de investigación:" />
+            <p:panelGrid columns="3" >
+                <p:selectOneMenu id="selectOneMenuGrupoInvest" value="#{forma.grupoInvestigacionEdit}" tabindex="110"  styleClass="ui-selectonemenuUASB"
+                                 required="false" requiredMessage="Grupo de investigación obligatoria" converter="ginConverter">
+                    <f:selectItem itemLabel="No Asignado" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{forma.listaGrupoInvestigacion}" var="gin" itemValue="#{gin}" itemLabel="#{gin.ginNombre.toUpperCase()}" 
+                                   itemDescription="#{''.concat(gin.ginCodigo)}"/>
+                    <p:ajax  event="change" process="@this" update="@parent" immediate="true" partialSubmit="true"/>
+                </p:selectOneMenu> 
+                <p:message id="messageGin" for="selectOneMenuGrupoInvest" display="icon" />
+                <p:commandButton id="commandButtonAddGin"  styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" rendered="#{forma.habilitarAddCatalogos}"
+                                 oncomplete="PF('dlgEditAdic').show();" immediate="true" partialSubmit="true" update="dlgEditAdic"
+                                 actionListener="#{forma.processAddButton}"/>
+            </p:panelGrid>        
+            <p:outputLabel for="selectOneMenuArea" value="Área académica:" />
+            <p:panelGrid columns="2" >
+                <p:selectOneMenu id="selectOneMenuArea" value="#{forma.areaCodigo}" tabindex="110"  styleClass="ui-selectonemenuUASB"
+                                 required="true" requiredMessage="Área académica obligatoria">
+                    <f:selectItem itemLabel="Seleccione una..." itemValue="" noSelectionOption="true"/>
+                    <f:selectItems value="#{forma.listaAreas}" var="area" itemValue="#{area.areaCodigo}" itemLabel="#{area.areaNombre}" 
+                                   itemDescription="#{''.concat(area.areaCodigo)}"/>
+                    <p:ajax  event="change" process="@this" update="@parent" immediate="true" partialSubmit="true"/>
+                </p:selectOneMenu> 
+                <p:message id="messageArea" for="selectOneMenuArea" display="icon" />
+            </p:panelGrid>        
+            <p:outputLabel for="selectOneRadioTI" value="Tipo de investigación:" />
+            <p:panelGrid columns="2" >
+                <p:selectOneRadio id="selectOneRadioTI" value="#{forma.tipoInvestig}" tabindex="115" 
+                                  required="true" requiredMessage="Tipo de investigación" widgetVar="widgetVarTipoInve">
+                    <f:selectItem itemLabel="Básica" itemValue="Básica"/>
+                    <f:selectItem itemLabel="Aplicada" itemValue="Aplicada"/>
+                    <f:selectItem itemLabel="Experimental" itemValue="Experimental"/>
+                    <p:ajax  event="change" process="@this" update="@parent" immediate="true" partialSubmit="true"/>
+                </p:selectOneRadio> 
+                <p:message id="messageTI" for="selectOneRadioTI" display="icon" />
+            </p:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid  styleClass="ui-panelgridUno form-group" style="width: 100%">
+            <f:facet name="header">
+                <p:row>
+                    <p:column colspan="3" styleClass="colorLabel"><p:outputLabel value="Desarrollo experimental según el área del conocimiento" /></p:column> 
+                </p:row>
+                <p:row>
+                    <p:column styleClass="colorLabel"><p:outputLabel value="Area" /></p:column>
+                    <p:column styleClass="colorLabel"><p:outputLabel value="Subarea" /></p:column>
+                    <p:column styleClass="colorLabel"><p:outputLabel value="UNESCO" /></p:column>
+                </p:row>
+            </f:facet>
+            <p:row>
+                <p:column> 
+                    <p:selectOneMenu id="areacine" value="#{forma.areaCine}" converter="cineConverter" styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                        <f:selectItems value="#{forma.listaAreaCine}" var="areaC" itemValue="#{areaC}" itemLabel="#{areaC.cinCampo}"/> 
+                        <p:ajax listener="#{forma.retrieveCines('Subarea')}" update="subareacine selectOneMenuCine" />
+                    </p:selectOneMenu>
+                </p:column>
+                <p:column>
+                    <p:selectOneMenu id="subareacine" value="#{forma.subAreaCine}" converter="cineConverter" styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                        <f:selectItems value="#{forma.listaSubAreaCine}" var="sub" itemValue="#{sub}" itemLabel="#{sub.cinCampo}"/>  
+                        <p:ajax listener="#{forma.retrieveCines('cine')}" update="selectOneMenuCine" />
+                    </p:selectOneMenu> 
+                </p:column>
+                <p:column>
+                    <p:panelGrid columns="2" >
+                        <p:selectOneMenu id="selectOneMenuCine" value="#{forma.cine}"  converter="cineConverter" styleClass="ui-selectonemenuUASB"
+                                         required="true" requiredMessage="Área del conocimiento UNESCO es obligatoria" >
+                            <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                            <f:selectItems value="#{forma.listaCine}" var="cine" itemValue="#{cine}" itemLabel="#{cine.cinCampo}" />     
+                            <p:ajax  event="change" process="@this" immediate="true" partialSubmit="true"/>
+                        </p:selectOneMenu>  
+                        <p:message id="messageCine" for="selectOneMenuCine" display="icon" />
+                    </p:panelGrid>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+            <p:separator/>
+        <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho200 colorLabel,,">
+            <p:outputLabel for="disciplina" value="Disciplina Científica:" />
+            <p:panelGrid columns="3" >
+                <p:selectOneMenu id="disciplina" value="#{forma.inveDiscipEdit}" styleClass="ui-selectonemenuUASB" tabindex="125"
+                                 required="true" requiredMessage="Disciplina Científica es obligatoria" converter="discipCientConverter">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                    <f:selectItems value="#{forma.listaCientificas}" var="disciplina" itemValue="#{disciplina}" itemLabel="#{disciplina.dscNombre}" />  
+                    <p:ajax  event="change" process="@this" update="@parent" immediate="true" partialSubmit="true"/>
+                </p:selectOneMenu>    
+                <p:message for="disciplina" display="icon" />
+                <p:commandButton id="commandButtonAddDisc"  styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" rendered="#{forma.habilitarAddCatalogos}"
+                                 oncomplete="PF('dlgEditAdic').show();" immediate="true" partialSubmit="true" update="dlgEditAdic"
+                                 actionListener="#{forma.processAddButton}"/>
+            </p:panelGrid>
+            <p:outputLabel for="objSocio" value="Objetivo socioeconómico:" />
+            <p:panelGrid columns="3" >
+                <p:selectOneMenu id="objSocio" value="#{forma.inveOsoeEdit}" styleClass="ui-selectonemenuUASB" tabindex="130"
+                                 required="true" requiredMessage="Objetivo socioeconómico es obligatorio" converter="oseConverter">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                    <f:selectItems value="#{forma.listaEconomicos}" var="ose" itemValue="#{ose}" itemLabel="#{ose.oseNombre}" /> 
+                    <p:ajax  event="change" process="@this" update="@parent" immediate="true" partialSubmit="true"/>
+                </p:selectOneMenu>    
+                <p:message for="objSocio" display="icon" />
+                <p:commandButton id="commandButtonAddSocio"  styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" rendered="#{forma.habilitarAddCatalogos}"
+                                 oncomplete="PF('dlgEditAdic').show();" immediate="true" partialSubmit="true" update="dlgEditAdic"
+                                 actionListener="#{forma.processAddButton}"/>
+            </p:panelGrid>        
+            <p:outputLabel for="ambito" value="Ámbito geográfico:" />
+            <p:panelGrid columns="3" >
+                <p:selectOneMenu id="ambito" value="#{forma.inveAmbitoGeograficoEdit}" styleClass="ui-selectonemenuUASB" tabindex="135" 
+                                 required="true" requiredMessage="Ámbito geográfico es obligatorio" converter="ambitoConverter">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                    <f:selectItems value="#{forma.listaGeograficos}" var="ambito" itemValue="#{ambito}" itemLabel="#{ambito.ambNombre}" /> 
+                    <p:ajax  event="change" process="@this" update="@parent" immediate="true" partialSubmit="true"/>
+                </p:selectOneMenu>    
+                <p:message for="ambito" display="icon" />
+                <p:commandButton id="commandButtonAddAmbito"  styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" rendered="#{forma.habilitarAddCatalogos}"
+                                 oncomplete="PF('dlgEditAdic').show();" immediate="true" partialSubmit="true" update="dlgEditAdic"
+                                 actionListener="#{forma.processAddButton}"/>
+            </p:panelGrid>        
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

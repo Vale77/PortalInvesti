@@ -1,0 +1,135 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style type="text/css">
+        body.layout-compact .ui-selectonemenuNroLectura .ui-selectonemenu-label{font-weight: bold;color: tomato} 
+        body.layout-compact .ui-selectonemenu-panelLectores{ width: 475px !important;}
+        body.layout-compact .ui-selectonemenu-panelLectores .ui-selectonemenu-filter{background-color: beige;font-size: 13px;text-transform: uppercase;width: 120%}
+        body.layout-compact .ui-selectonemenu-panelLectores .ui-selectonemenu-filter-container .ui-icon{right: -45px;}
+        body.layout-compact .ui-selectonemenu-panelLectores .ui-selectonemenu-item{font-size: 11px;}
+        body.layout-compact .ui-selectonemenu-panelLectores .ui-selectonemenu-table td{padding: 2px 10px 2px 10px;}
+        
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;}
+        .ui-panelgrid-blankLec.form-group .ui-panelgrid-cell{padding: 0px 5px;}
+        .colorCol{color: darkblue;font-size: 11px;}
+        .colAncho175{width: 175px;}
+        .colAncho150{width: 150px;}
+        body.layout-compact .ui-dataTable-Asig tbody tr.ui-widget-content td{padding: 3px 5px;}
+
+        body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue;font-size: 12px;}
+        body.layout-compact .calendario .ui-inputfield.ui-state-disabled{opacity: 1.0}
+        body.layout-compact .calendarioLimite .ui-inputfield.ui-state-disabled{font-weight: bold; color: brown}
+        body.layout-compact .ui-panelGridLector .ui-panel-content{padding: 0px;}
+
+    </style>
+
+    <p:panelGrid  columns="2" columnClasses="colorLabel colAncho175,colorCol colorLabel" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+        <f:facet name="header">
+            DATOS DE LA INVESTIGACIÓN
+        </f:facet>
+        <p:outputLabel value="Título:"/>
+        <p:outputLabel value="#{lectorInfoFinalBean.inveInformeOperSelected.inveProyecto.pryTitulo}"  style="text-transform: uppercase"/>
+    </p:panelGrid>
+    <p:panelGrid  columns="4" columnClasses="colorLabel colAncho175,colorCol colorLabel,colorLabel,colorCol colorLabel" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+        <p:outputLabel value="Nombre del investigador:" />
+        <p:outputLabel style="color:brown;" value="#{lectorInfoFinalBean.inveInformeOperSelected.inveProyecto.prinPersona.perNombres} #{lectorInfoFinalBean.inveInformeOperSelected.inveProyecto.prinPersona.perPrimerApellido} #{lectorInfoFinalBean.inveInformeOperSelected.inveProyecto.prinPersona.perSegundoApellido}"/>
+        <p:outputLabel value="Categoría:" />
+        <p:outputLabel value="#{lectorInfoFinalBean.inveInformeOperSelected.inveProyecto.prinCategoriaInvest.caiDescripcion}"
+                       style="text-transform: uppercase;color: brown; "/>
+    </p:panelGrid>
+
+    <p:panel id="pnlGrid" styleClass="ui-panelGridLector">
+        <p:panelGrid columns="3" columnClasses="colorLabel colAncho150,colorCol" styleClass="ui-panelgrid-blankLec form-group" style="width: 100%;">
+            <f:facet name="header">
+                DESIGNACIÓN DE LECTOR DE INFORME FINAL
+            </f:facet>  
+            <p:outputLabel for="selectOneMenuLector" value="Lector:"/>
+            <h:panelGrid columns="3" cellpadding="5" cellspacing="0">
+                <p:selectOneMenu id="selectOneMenuLector" value="#{lectorInfoFinalBean.prinPersona}" styleClass="ui-selectonemenuUASB" converter="personaConverter" 
+                                 required="true" requiredMessage="Lector requerido" var="docente" filter="true" filterMatchMode="startsWith" panelStyleClass="ui-selectonemenu-panelLectores"
+                                 disabled="#{lectorInfoFinalBean.inveLectorEdit.lecCodigo gt 0}">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                    <f:selectItems value="#{lectorInfoFinalBean.listaPersonas}" var="per" 
+                                   itemValue="#{per}" itemLabel="#{per.perPrimerApellido} #{per.perSegundoApellido} #{per.perNombres}"/>  
+                    <p:column >
+                        <h:outputText value="#{docente.perPrimerApellido} #{docente.perSegundoApellido}" style="text-transform: uppercase;"/>
+                    </p:column>   
+                    <p:column>
+                        <h:outputText value="#{docente.perNombres}"  style="text-transform: uppercase"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{docente.perIdDoc}"  style="text-transform: uppercase"/>
+                    </p:column>
+                </p:selectOneMenu> 
+                <p:message for="selectOneMenuLector" display="icon" />
+                <p:commandButton id="commandButtonNewPerson" value="Añadir" styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" 
+                                 oncomplete="PF('dlgEditAdic').show();" immediate="true" partialSubmit="true" update="formEditAdic"
+                                 actionListener="#{lectorInfoFinalBean.addNuevoItemButton_processAction}"/>
+            </h:panelGrid>
+            <h:panelGrid columns="2" columnClasses="colorLabel colAncho175,colorLabel" cellpadding="0"  cellspacing="0" >
+                <p:outputLabel for="selectOneMenuNroLec" value="Número de lectura:"/>
+                <p:selectOneMenu id="selectOneMenuNroLec" value="#{lectorInfoFinalBean.inveLectorEdit.lecNumero}" styleClass="ui-selectonemenuUASB ui-selectonemenuNroLectura" disabled="true">
+                    <f:selectItem itemLabel="PRIMERA" itemValue="1"/>
+                    <f:selectItem itemLabel="SEGUNDA" itemValue="2"/>
+                    <f:selectItem itemLabel="TERCERA" itemValue="3"/>
+                    <f:selectItem itemLabel="CUARTA" itemValue="4"/>
+                </p:selectOneMenu>
+            </h:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid  columns="3"  styleClass="ui-panelgrid-blankLec form-group" style="width: 100%;">
+            <h:panelGrid columns="2" columnClasses="colorLabel colAncho175" cellpadding="0"  cellspacing="0" >
+                <p:outputLabel for="fechaDesig" value="Fecha de designación:"/>
+                <h:panelGrid columns="2" >
+                    <p:calendar id="fechaDesig" value="#{lectorInfoFinalBean.inveLectorEdit.lecFechaDesignacion}"  navigator="true"  styleClass="calendario"
+                                pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                required="true" requiredMessage="Fecha de designación requerida" 
+                                disabled="#{lectorInfoFinalBean.inveSeguimiento.segCodigo gt 0}">
+                        <p:ajax event="dateSelect" update="limite,limiteEntrega" listener="#{lectorInfoFinalBean.calcFechaLimite()}"/>            
+                    </p:calendar>
+                    <p:message for="fechaDesig" display="icon" />
+                </h:panelGrid>
+            </h:panelGrid>
+            <h:panelGrid id="limite" columns="2" columnClasses="colorLabel colAncho200,colorLabel" cellpadding="0"  cellspacing="0" >
+                <p:outputLabel value="Fecha limite de aceptación:"/>
+                <h:outputFormat value="{0,Date,dd-MMMM-yyyy}"   style="text-transform: uppercase;color: brown; font-size: 12px; 
+                                visibility:  #{lectorInfoFinalBean.inveLectorEdit.lecFechaLimiteAcep ne null ?'visible':'hidden'}">
+                    <f:param value="#{lectorInfoFinalBean.inveLectorEdit.lecFechaLimiteAcep}"/>
+                </h:outputFormat>     
+            </h:panelGrid>
+            <h:panelGrid columns="2" columnClasses="colorLabel" cellpadding="5"  cellspacing="0"  >
+                <p:outputLabel value="Estado:"/>
+                <p:selectOneMenu id="selectOneMenuEstado" value="#{lectorInfoFinalBean.inveLectorEdit.lecAceptacion}" styleClass="ui-selectonemenuUASB"
+                                 disabled="#{lectorInfoFinalBean.inveLectorEdit.lecFechaAceptacion ne null or lectorInfoFinalBean.inveLectorEdit.lecCodigo eq null}">
+                    <f:selectItem itemLabel="Pendiente" itemValue="#{null}" noSelectionOption="true" itemDisabled="#{lectorInfoFinalBean.inveLectorEdit.lecNumero gt 1}"/>
+                    <f:selectItem itemLabel="SI Acepta" itemValue="S" />
+                    <f:selectItem itemLabel="NO aceptado" itemValue="N" itemDisabled="#{lectorInfoFinalBean.inveLectorEdit.lecNumero gt 1}"/>
+                </p:selectOneMenu>
+            </h:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid columns="3" columnClasses="colorLabel colAncho150,colorCol" styleClass="ui-panelgrid-blankLec form-group" style="width: 100%;">
+            <p:outputLabel for="inputMaskOficio" value="Nro. Oficio:"/>
+            <h:panelGrid columns="2">
+                <p:inputMask id="inputMaskOficio" mask="999-CI-UASB-99" value="#{lectorInfoFinalBean.inveSeguimiento.segNroComunic}"
+                             required="true" requiredMessage="Nro. de Oficio requerido" styleClass="campoNoEditado" autocomplete="off"
+                             onfocus="this.setSelectionRange(0, this.value.length)" style="width:115px;text-align: center"
+                             disabled="#{lectorInfoFinalBean.inveSeguimiento.segCodigo gt 0}">
+                </p:inputMask>
+                <p:message for="inputMaskOficio" display="icon"/>    
+            </h:panelGrid>
+            <h:panelGrid id="limiteEntrega" columns="2" columnClasses="colorLabel colAncho200,colorLabel" cellpadding="0"  cellspacing="0" >
+                <p:outputLabel for="fechaEntrega" value="Limite de entrega informe:"/>
+                <h:panelGrid columns="2" >
+                    <p:calendar id="fechaEntrega" value="#{lectorInfoFinalBean.inveSeguimiento.segFechaLimite}"  navigator="true"  styleClass="calendario calendarioLimite" 
+                                pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off" inputStyle="width: 175px"
+                                required="true" requiredMessage="Limite de entrega informe requerida"  disabled="#{lectorInfoFinalBean.inveSeguimiento.segCodigo gt 0}">
+                    </p:calendar>
+                    <p:message for="fechaEntrega" display="icon" />
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

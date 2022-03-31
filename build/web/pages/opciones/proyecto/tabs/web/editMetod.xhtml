@@ -1,0 +1,20 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">  
+
+    <p:panel styleClass="panelTab">
+        <p:panelGrid columns="1" style="width: 100%;">
+            <p:outputLabel value="Describa cómo va a desarrollar la investigación y las técnicas que va a utilizar" 
+                           styleClass="colorLabel" style="color: brown;font-size: 14px;background-color: wheat"/>
+            <pe:ckEditor  id="metod" value="#{forma.inveProyectoEdit.pryMetodologiaText}" skin="office2013" language="es"  width="100%" height="355"
+                          readonly="#{forma.inveProyectoEdit.pryEstadoReg ne 'I'}"
+                          customConfig="#{facesContext.externalContext.requestContextPath}/resources/js/ckeditor_config_titulo.js">    
+                <p:ajax event="blur" oncomplete="cambioRealizado();" />
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </pe:ckEditor>  
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

@@ -1,0 +1,96 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        body.layout-compact .ui-panelVerfif .ui-panel-titlebar{padding: 3px 10px;background-color:teal;font-size: 11px;}
+        body.layout-compact .ui-panelVerfif .ui-panel-content{padding: 3px 10px;}   
+        body.layout-compact .ui-selectmanycheckbox .ui-selectmanycheckbox-item-group{font-size: 11px;}
+        .ui-selectmanycheckbox .ui-selectmanycheckbox-responsive-group{padding: 0.1em 0.1em 0.1em 0}
+        .ui-md-1, .ui-md-2, .ui-md-3, .ui-md-4, .ui-md-5, .ui-md-6, .ui-md-7, .ui-md-8, .ui-md-9, .ui-md-10, .ui-md-11, .ui-md-12{padding:0.1em}
+    </style>
+
+    <p:panelGrid columns="2" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%;">
+        <p:panel header="VERIFICACIONES SOBRE EL ESQUEMA DE PRESENTACION DEL PROYECTO " styleClass="ui-panelVerfif" >
+            <p:selectManyCheckbox  value="#{forma.selectedItemsEsquema}" layout="responsive" columns="2"
+                                   disabled="#{forma.convocatoria.cvoEstado eq 'C' or forma.inveProyectoSelected.pryEstadoReg eq 'A' or forma.inveProyectoSelected.pryEstadoReg eq 'X'}"
+                                   required="#{forma.inveProyectoEdit.pryEstadoReg eq 'A'}" 
+                                   requiredMessage="Verificaciones de cumplimiento del esquema es obligatorio">
+                <f:selectItems value="#{forma.esquema}" var="itemEsquema" itemLabel="#{itemEsquema}" itemValue="#{itemEsquema}" />
+            </p:selectManyCheckbox>
+        </p:panel>                    
+    </p:panelGrid>
+    <p:separator/>
+    <p:panelGrid id="pnlTipoProy" columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho150 colorLabel">
+        <p:outputLabel for="selectOneMenuTipoProy" value="Tipo de proyecto:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2" >
+            <p:selectOneMenu id="selectOneMenuTipoProy" value="#{forma.inveProyectoEdit.inveTipoProyecto}" styleClass="ui-selectonemenuUASB campoNoEditado" 
+                             required="true" requiredMessage="Tipo de proyecto obligatorio" converter="tipoProyConverter"
+                             disabled="#{forma.convocatoria.cvoEstado eq 'C' or forma.inveProyectoSelected.pryEstadoReg eq 'A' or forma.inveProyectoSelected.pryEstadoReg eq 'X'}">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}"/>
+                <f:selectItems value="#{forma.listaTipoProy}" var="tp" itemLabel="#{tp.tipNombre}" itemValue="#{tp}" />
+                <p:ajax  event="change" process="@this" update="@parent pnlTipoProy" partialSubmit="true" listener="#{forma.retrieveByTipo}"/>
+            </p:selectOneMenu> 
+            <p:message id="messageTipoProy" for="selectOneMenuTipoProy" display="icon" />
+        </p:panelGrid>  
+        <p:outputLabel for="selectOneMenuProyAdjunto" value="Coordinador:" styleClass="colorLabel" />
+        <p:panelGrid columns="2" >
+            <p:outputLabel value="&lt;--- EN TIPO #{forma.inveProyectoEdit.inveTipoProyecto.tipNombre} NO APLICA" 
+                           style="color: brown; text-transform: uppercase; font-size: 12px;" styleClass="colorLabel" 
+                           rendered="#{forma.inveProyectoEdit.inveTipoProyecto ne null and forma.inveProyectoEdit.inveTipoProyecto.tipCodigo ne 2}"/>
+            <p:selectOneMenu id="selectOneMenuProyAdjunto" value="#{forma.inveProyectoEdit.inveProyecto}" styleClass="ui-selectonemenuUASB campoNoEditado" 
+                             converter="proyectoConverter" style="width: 600px;" rendered="#{forma.inveProyectoEdit.inveTipoProyecto.tipCodigo eq 2}"
+                             disabled="#{forma.convocatoria.cvoEstado eq 'C' or forma.inveProyectoSelected.pryEstadoReg eq 'A' or forma.inveProyectoSelected.pryEstadoReg eq 'X'}">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{forma.listaProyAdjunto}" var="pry" 
+                               itemDisabled="#{pry.pryCodigo eq forma.inveProyectoEdit.pryCodigo or pry.inveProyecto ne null }"
+                               itemLabel="#{pry.prinPersona.perNombres} #{pry.prinPersona.perPrimerApellido} - #{pry.pryTitulo}" itemValue="#{pry}" />
+                <p:ajax  event="change" process="@this" update="@parent" immediate="true" partialSubmit="true"/>
+            </p:selectOneMenu> 
+            <p:message for="selectOneMenuProyAdjunto" display="icon" />
+        </p:panelGrid>
+    </p:panelGrid>      
+    <p:separator/>
+    <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho150 colorLabel">
+        <p:outputLabel  value="Proy. ingresado por:" />
+        <p:outputLabel value="#{forma.inveProyectoEdit.pryOrigenIngreso eq 'I' ? 'FORMULARIO':'SISTEMA'}" styleClass="colorLabel" style="color:brown;font-size: 12px;"/>  
+        <p:outputLabel for="selectOneMenuEstado" value="Estado de proyecto:" />
+        <p:panelGrid columns="2" >
+            <p:selectOneMenu id="selectOneMenuEstado" value="#{forma.inveProyectoEdit.pryEstadoReg}" tabindex="180" styleClass="ui-selectonemenuUASB"
+                             disabled="#{forma.convocatoria.cvoEstado eq 'C' or forma.inveProyectoSelected.pryEstadoReg eq 'A' or forma.inveProyectoSelected.pryEstadoReg eq 'X'}">
+                <f:selectItem itemLabel="INGRESADO" itemValue="I" 
+                              itemDisabled="#{forma.inveProyectoEdit.pryOrigenIngreso eq 'S' or forma.inveProyectoEdit.inveCarta ne null}"/>
+                <f:selectItem itemLabel="REGISTRADO" itemValue="R"
+                              itemDisabled="#{forma.inveProyectoEdit.pryCodigoCi ne null  or forma.inveProyectoEdit.inveCarta ne null}"/>
+                <f:selectItem itemLabel="ACEPTADO - petición de carta al área" itemValue="A"/>
+                <f:selectItem itemLabel="RECHAZADO" itemValue="X"/>
+                <p:ajax process="@this" update="inputTextCodigoCI" oncomplete="setNullCod();"/>
+            </p:selectOneMenu> 
+            <p:message id="messageEstado" for="selectOneMenuEstado" display="icon" />
+        </p:panelGrid>  
+        <p:outputLabel for="inputTextCodigoCI" value="Código del proyecto:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:inputText id="inputTextCodigoCI"  value="#{forma.codigoCI}" required="true" requiredMessage="Código de proyecto obligatorio" 
+                         disabled="#{forma.convocatoria.cvoEstado eq 'C' or forma.inveProyectoEdit.pryEstadoReg ne 'A'}"
+                         autocomplete="off" styleClass="campoNoEditado" onfocus="this.setSelectionRange(0, this.value.length)"
+                         style="width:50px;text-transform: uppercase;">
+                <p:ajax event="change" update="msgCodigo"/>
+                <f:attribute name="proyecto" value="#{forma.inveProyectoEdit}"/>
+                <f:validator validatorId="ec.edu.uasb.investigacion.validator.CodProyValidator"/>
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputText>
+            <p:message for="inputTextCodigoCI" id="msgCodigo" style="font-size: 12px"/>       
+        </p:panelGrid>  
+    </p:panelGrid>  
+    <div align="right">
+        <p:commandButton value="Grabar" styleClass="ui-confirmdialog-yes GreenButton" renderDisabledClick="true"
+                         icon="ui-icon-email" partialSubmit="true" process="@form" update="@form"
+                         rendered="#{forma.convocatoria.cvoEstado eq 'A' }"
+                         actionListener="#{forma.updateButton_processAction}"/>
+        <p:commandButton value="Cancelar" styleClass="ui-confirmdialog-no RedButton" icon="ui-icon-close" immediate="true"
+                         action="#{forma.cancelarButton()}" partialSubmit="true"/>
+    </div>
+</ui:composition>

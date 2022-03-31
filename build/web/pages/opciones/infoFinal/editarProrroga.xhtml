@@ -1,0 +1,68 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style type="text/css">
+        body.layout-compact .ui-selectonemenuReco .ui-selectonemenu-label{font-weight: bold;color: brown} 
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;}
+        .ui-panelgrid-blankLec.form-group .ui-panelgrid-cell{padding: 5px 10px;}
+        .colorCol{color: darkblue;font-size: 12px;}
+        .colAncho150{width: 150px;}
+        body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue;font-size: 12px; width: 175px}
+        body.layout-compact .calendario .ui-inputfield.ui-state-disabled{opacity: 1.0}
+    </style>
+    <p:panelGrid  columns="2" columnClasses="colorLabel colAncho150,colorCol" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+        <f:facet name="header">
+            DATOS DEL PROYECTO DE INVESTIGACIÓN
+        </f:facet>
+        <p:outputLabel value="Título:"/>
+        <p:outputLabel value="#{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.pryCodigoCi} - #{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.pryTitulo}" style="text-transform: uppercase"/>
+        <p:outputLabel value="Nombre Investigador:" />
+        <p:outputLabel style="color:brown; font-weight: bold"
+                       value="#{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinPersona.perPrimerApellido} #{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinPersona.perSegundoApellido} #{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinPersona.perNombres}"/>
+    </p:panelGrid>
+    <p:panelGrid id="pnlGrid" columns="2" columnClasses="colorLabel colAncho150,colorCol" styleClass="ui-panelgrid-blank ui-panelgrid-blankLec form-group" style="width: 100%;">
+        <p:outputLabel value="PLAZO ANTERIOR:" style="font-size: 16px;" rendered="#{informeFinalBean.nroProrroga ne null}"/>
+        <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="font-size: 16px;color:#0ab412;text-transform: uppercase" 
+                        rendered="#{informeFinalBean.nroProrroga ne null}">
+            <f:param value="#{informeFinalBean.inveValoracionSelected.pro1 eq null ? informeFinalBean.inveValoracionSelected.inveSeguimiento.segFechaLimite :
+                              informeFinalBean.inveValoracionSelected.pro2 eq null ? informeFinalBean.inveValoracionSelected.pro1:
+                              informeFinalBean.inveValoracionSelected.proExt eq null ? informeFinalBean.inveValoracionSelected.pro2 : null}"/>
+        </h:outputFormat> 
+        <p:outputLabel value="#{informeFinalBean.nroProrroga eq null ? informeFinalBean.tipoTransaccion : 'PRÓRROGA'}" 
+                       style="font-size: 16px;color:#{informeFinalBean.nroProrroga eq null ? 'red':'#0ab412'};"/>
+        <p:separator >
+            <p:outputLabel value="#{informeFinalBean.nroProrroga eq 3 ? 'EXTRAORDINARIA': informeFinalBean.nroProrroga eq '1' ? 'UNO':'DOS'}" 
+                           styleClass="colorLabel" style="font-size: 16px;color:#0ab412;" rendered="#{informeFinalBean.nroProrroga ne null}"/>
+        </p:separator>
+        <p:outputLabel for="inputMaskMemo" value="#{informeFinalBean.nroProrroga ne null ?'Nro. Memorando':'Nro. Oficio'}"/>
+        <h:panelGrid columns="2">
+            <p:inputMask id="inputMaskMemo" mask="999-CI-UASB-99" value="#{informeFinalBean.inveSeguimiento.segNroComunic}"
+                         required="true" requiredMessage="#{informeFinalBean.nroProrroga ne null ?'Nro. Memorando':'Nro. Oficio'} obligatorio" styleClass="campoNoEditado" autocomplete="off"
+                         onfocus="this.setSelectionRange(0, this.value.length)" style="width:125px;text-align: center"
+                         disabled="#{informeFinalBean.inveSeguimiento.segCodigo ne null}">
+            </p:inputMask>
+            <p:message for="inputMaskMemo" display="icon"/>    
+        </h:panelGrid>
+        <p:outputLabel for="fechaDesde" value="Fecha comunicado:"/>
+        <h:panelGrid columns="2" >
+            <p:calendar id="fechaDesde" value="#{informeFinalBean.inveSeguimiento.segFechaInicial}"  navigator="true"  styleClass="calendario"
+                        pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                        required="true" requiredMessage="Fecha comunicado requerida" disabled="#{informeFinalBean.inveSeguimiento.segCodigo ne null}" >
+                <p:ajax event="dateSelect" update="fechaFin" listener="#{informeFinalBean.calcFechaLimite()}" rendered="#{informeFinalBean.nroProrroga ne null}"/>            
+            </p:calendar>
+            <p:message for="fechaDesde" display="icon" />
+        </h:panelGrid>  
+        <p:outputLabel  for="fechaFin"  value="Nueva fecha:" rendered="#{informeFinalBean.nroProrroga ne null}"/>
+        <h:panelGrid columns="2" rendered="#{informeFinalBean.nroProrroga ne null}">
+            <p:calendar id="fechaFin" value="#{informeFinalBean.inveSeguimiento.segFechaLimite}"  navigator="true"  styleClass="calendario"
+                        pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                        required="true" requiredMessage="Nueva fecha requerida"  disabled="#{informeFinalBean.inveSeguimiento.segCodigo ne null}">
+            </p:calendar>
+            <p:message for="fechaFin" display="icon" />
+        </h:panelGrid>
+    </p:panelGrid>
+</ui:composition>

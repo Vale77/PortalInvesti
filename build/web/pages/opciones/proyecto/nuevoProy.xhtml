@@ -1,0 +1,72 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style type="text/css">
+        body.layout-compact .ui-wizard .ui-wizard-step-titles > li {padding: 3px 14px; font-size: 12px}
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 1px 5px;}
+        .ui-panelgrid.form-group .ui-panelgrid-cell{padding: 1px 5px;}
+        body.layout-compact .ui-button{font-size:12px;height:26px}
+        body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;font-size: 12px;color: blue}
+        .calendario .ui-inputfield.ui-state-disabled {font-weight: bold;background-color: #dbdbdb;opacity: 1.0;}
+        body.layout-compact .ui-panel .ui-panel-titlebar{padding: 0px 10px}
+        .ui-panelgrid.form-group .ui-panelgrid-cell{padding: 2px 5px;}
+        .ui-panelgridPreFrm.form-group{width: 950px;}     
+
+        body.layout-compact .panelTab .ui-panel-content{padding: 0px;}
+        body.layout-compact .panelTab {height: 475px; border-style: none !important}
+        .colAncho150{width: 150px;}
+        .colAncho40{width: 40px}
+        .colAncho300{width: 300px}
+        ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+            color:    #909; font-size: 12px
+        }
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color:    #909;font-size: 12px; opacity:  1;
+        }
+        ::-moz-placeholder { /* Mozilla Firefox 19+ */
+            color:    #909;font-size: 12px; opacity:  1;
+        }
+        :-ms-input-placeholder { /* Internet Explorer 10-11 */
+            color:    #909;font-size: 12px; 
+        }
+        ::-ms-input-placeholder { /* Microsoft Edge */
+            color:    #909;font-size: 12px; 
+        }
+        ::placeholder { /* Most modern browsers support this now. */
+            color:    #909;font-size: 12px; 
+        }
+        .ubicaBoton1{width: 80%} .ubicaBoton2{width: 10%}
+    </style>
+    <p:focus context="pnlGrid" />
+    <p:panelGrid id="pnlGrid" columns="1" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group" > 
+        <p:wizard id="wizardPry" flowListener="#{forma.onFlowProcess}"  backLabel="Anterior" nextLabel="Siguiente"   widgetVar="widgetVarWizardPry">
+            <p:tab id="datos" title="1. DATOS INVESTIGADOR">
+                <p:remoteCommand name="setfocoNroDoc" immediate="true" oncomplete="document.getElementById('formEdit:inputTextNroDoc').focus();"/>
+                <p:remoteCommand name="setfocoEmail"  immediate="true" oncomplete="document.getElementById('formEdit:inputTextMail').focus();"/>
+                <p:remoteCommand name="setfocoNombre" immediate="true" oncomplete="document.getElementById('formEdit:inputTextNombre').focus();"/>                   
+                <ui:include src="/pages/opciones/proyecto/tabs/editDatosPerso.xhtml"/>
+            </p:tab>
+            <p:tab id="infoProy" title="2. PROYECTO">
+                <ui:include src="/pages/opciones/proyecto/tabs/editInfoProy.xhtml"/>
+            </p:tab>            
+            <p:tab id="infoAdic" title="3. INFORMACIÓN ADICIONAL">
+                <ui:include src="/pages/opciones/proyecto/tabs/editInfoAdic.xhtml"/>
+            </p:tab>
+            <p:tab id="presupuesto" title="4. PRESUPUESTO">
+                <ui:include src="/pages/opciones/proyecto/tabs/editPresupuesto.xhtml"/>
+            </p:tab> 
+            <p:tab id="documento" title="5. DOCUMENTOS">
+                <ui:include src="/pages/opciones/proyecto/tabs/editDocumento.xhtml"/>
+            </p:tab>
+            <p:tab id="envio" title="6. CONTROL DEL ESQUEMA">
+                <p:remoteCommand name="setNullCod" immediate="true" oncomplete="document.getElementById('formEdit:inputTextCodigoCI').value = '';document.getElementById('formEdit:inputTextCodigoCI').focus()"/>
+                <ui:include src="/pages/opciones/proyecto/tabs/editCheck.xhtml"/>
+            </p:tab>                    
+        </p:wizard>
+    </p:panelGrid>
+
+</ui:composition>

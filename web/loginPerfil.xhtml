@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <link href="#{request.contextPath}/resources/images/uasb.ico" rel="shortcut icon" type="image/x-icon"/>   
+            </f:facet>
+            <title>Portales UASB</title>
+            <h:outputScript name="js/ripple.js" library="ultima-layout" />
+            <h:outputScript name="js/layout.js" library="ultima-layout" />
+            <style>
+                .ui-growl-message{font-size: 12px}
+                .colorLabel{color: #00444C;font-weight: bold;}
+                .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;font-size: 12px;}
+                .login-panel .ui-g .ui-g-12{padding: 20px 40px;}
+                body .ui-selectonemenuUASB .ui-selectonemenu-label.ui-inputfield{font-size: 12px;color: blue; text-align: center}
+                body .ui-selectonemenu-panelPerfil .ui-selectonemenu-item{font-size: 12px;padding: 6px 14px;}
+            </style>
+        </h:head>
+
+        <h:body styleClass="login-body">
+            <div class="card login-panel ui-fluid">
+                <div class="ui-g">
+                    <div class="ui-g-12"> 
+                        <p:graphicImage name="images/logo-login.png" library="ultima-layout" />
+                    </div>
+                    <p:growl autoUpdate="true" showDetail="false"/>
+                    <p:idleMonitor timeout="${session.maxInactiveInterval * 1000}">
+                        <p:ajax event="idle" oncomplete="window.location = '#{facesContext.externalContext.requestContextPath}';"/>
+                    </p:idleMonitor>
+                    <h:form>
+                        <div class="ui-g-12">
+                            <p:panelGrid columns="1"  style="width: 100%;"  styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group" >
+                                <p:outputLabel  value="Usuario" styleClass="colorLabel"/>
+                                <h:outputText value="#{user.usuNombreUsuario} #{user.usuApellUsuario}" style="color:blue"/>
+                            </p:panelGrid>
+                        </div>
+                        <div  class="ui-g-12">
+                            <p:panelGrid columns="1"  style="width: 100%"  styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group" >
+                                <p:outputLabel  value="ROL de usuario" styleClass="colorLabel"/>
+                                <p:selectOneMenu value="#{loginMgmtBean.perfilLogin}"  styleClass="ui-selectonemenuUASB" panelStyleClass="ui-selectonemenu-panelPerfil"
+                                                 required="true" requiredMessage="Seleccione el perfil de usuario">
+                                    <f:selectItem itemValue="" itemLabel="Seleccione uno ..." noSelectionOption="true"/>
+                                    <f:selectItem itemValue="I" itemLabel="INVESTIGADOR"/>
+                                    <f:selectItem itemValue="F" itemLabel="FUNCIONARIO"/>
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                        </div>         
+                        <div class="ui-g-12">
+                            <p:commandButton  value="Ingresar" icon="ui-icon-person" partialSubmit="true" action="#{loginMgmtBean.loginPerfilUsr('investigacion')}"/>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+            <div class="login-footer">Unidad de Informática y Sistemas</div>
+            <h:outputStylesheet name="css/ripple.css" library="ultima-layout" />
+            <h:outputStylesheet name="css/layout-#{guestPreferences.theme}.css" library="ultima-layout" />
+        </h:body>
+    </f:view>
+</html>

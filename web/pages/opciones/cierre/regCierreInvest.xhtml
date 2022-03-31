@@ -1,0 +1,143 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style type="text/css">
+        .campoNoEditado.ui-state-disabled {font-weight: bold;opacity: 1.0;color: brown}
+        body.layout-compact .ui-selectonemenuNroLectura .ui-selectonemenu-label{font-weight: bold;color: tomato} 
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;}
+        .ui-panelgrid-blankLec.form-group .ui-panelgrid-cell{padding: 0px 5px;}
+        .colorCol{color: darkblue;font-size: 12px;}
+        .colAncho160{width: 160px;}
+        body.layout-compact .ui-dataTable-Asig tbody tr.ui-widget-content td{padding: 3px 5px;}
+        body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue;font-size: 12px;}
+        body.layout-compact .calendario .ui-inputfield.ui-state-disabled{opacity: 1.0}
+        body.layout-compact .calendarioLimite .ui-inputfield.ui-state-disabled{font-weight: bold; color: brown}
+        body.layout-compact .ui-panelGridLector .ui-panel-content{padding: 0px;}
+    </style>
+    <p:panelGrid  columns="2" columnClasses="colorLabel colAncho160,colorCol colorLabel" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+        <f:facet name="header">
+            DATOS DE LA INVESTIGACIÓN
+        </f:facet>
+        <p:outputLabel value="Código:" />
+        <p:outputLabel value="#{cierreBean.inveInveProyectoSelected.pryCodigoCi}"  style="text-transform: uppercase;color: brown"/>
+        <p:outputLabel value="Título:"/>
+        <p:outputLabel value="#{cierreBean.inveInveProyectoSelected.pryTituloFinal ne null ? cierreBean.inveInveProyectoSelected.pryTituloFinal:cierreBean.inveInveProyectoSelected.pryTitulo}" 
+                       style="text-transform: uppercase"/>
+    </p:panelGrid>
+    <p:panelGrid  columns="4" columnClasses="colorLabel colAncho160,colorCol colorLabel,colorLabel,colorCol colorLabel" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+        <p:outputLabel value="Nombre del investigador:" />
+        <p:outputLabel style="color:brown;" value="#{cierreBean.inveInveProyectoSelected.prinPersona.perNombres} #{cierreBean.inveInveProyectoSelected.prinPersona.perPrimerApellido} #{cierreBean.inveInveProyectoSelected.prinPersona.perSegundoApellido}"/>
+        <p:outputLabel value="Categoría:" />
+        <p:outputLabel value="#{cierreBean.inveInveProyectoSelected.prinCategoriaInvest.caiDescripcion}"
+                       style="text-transform: uppercase;"/>
+        <p:outputLabel value="Fecha aprobación:"/>
+        <h:outputFormat value="{0,Date,dd-MMMM-yyyy}"   style="text-transform: uppercase;color: #0ab412; font-size: 12px;">
+            <f:param value="#{cierreBean.inveInveProyectoSelected.fechaNotifAprob}"/>
+        </h:outputFormat>  
+        <p:outputLabel value="Oficio:"/>
+        <p:outputLabel value="#{cierreBean.inveInveProyectoSelected.notificacionAprob}"  style="color: #0ab412;"/>
+    </p:panelGrid>
+
+    <p:panel id="pnlGrid" styleClass="ui-panelGridLector">
+        <p:panelGrid  columns="1"  styleClass="ui-panelgrid-blankLec form-group" style="width: 100%;"
+                      rendered="#{cierreBean.inveInveProyectoSelected.prinCategoriaInvest.caiCodigo eq 2 or cierreBean.inveInveProyectoSelected.prinCategoriaInvest.caiCodigo eq 3}">
+            <f:facet name="header">
+                DATOS DE CONTRATO
+            </f:facet>
+            <h:panelGrid columns="2" columnClasses="colorLabel colAncho160" cellpadding="0"  cellspacing="0" >
+                <p:outputLabel for="nroContrato" value="Número de contrato:"/>
+                <h:panelGrid columns="2">
+                    <p:inputMask id="nroContrato" mask="999-CM-99" value="#{cierreBean.inveInveProyectoEdit.pryContrato}" 
+                                 required="true" requiredMessage="Número de contrato requerido" styleClass="campoNoEditado" autocomplete="off"
+                                 onfocus="this.setSelectionRange(0, this.value.length)" style="width:115px;text-align: center"
+                                 disabled="#{cierreBean.inveSeguimiento.segCodigo gt 0}">
+                    </p:inputMask>
+                    <p:message for="nroContrato" display="icon"/>    
+                </h:panelGrid>              
+                <p:outputLabel for="fechaContrato" value="Fecha de contrato:"/>
+                <h:panelGrid columns="2" >
+                    <p:calendar id="fechaContrato" value="#{cierreBean.inveInveProyectoEdit.pryFechaContrato}"  navigator="true"  styleClass="calendario"
+                                pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                required="true" requiredMessage="Fecha de contrato requerida" inputStyle="width: 175px"
+                                disabled="#{cierreBean.inveSeguimiento.segCodigo gt 0}">
+                    </p:calendar>
+                    <p:message for="fechaContrato" display="icon" />
+                </h:panelGrid>
+                <p:outputLabel for="fechaRecep" value="Fecha de recepción:"/>
+                <h:panelGrid columns="2" >
+                    <p:calendar id="fechaRecep" value="#{cierreBean.inveInveProyectoEdit.pryFechaRecepContrato}"  navigator="true"  styleClass="calendario"
+                                pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                required="true" requiredMessage="Fecha de recepción requerida" inputStyle="width: 175px"
+                                disabled="#{cierreBean.inveSeguimiento.segCodigo gt 0}">
+                    </p:calendar>
+                    <p:message for="fechaRecep" display="icon" />
+                </h:panelGrid>                
+            </h:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid columns="1" columnClasses="colorLabel" styleClass="ui-panelgrid-blankLec form-group" style="width: 100%;">
+            <f:facet name="header">
+                MEMORANDO DE CIERRE
+            </f:facet>
+            <h:panelGrid columns="4" columnClasses="colorLabel colAncho160" cellpadding="5"  cellspacing="0" >
+                <p:outputLabel for="inputMaskOficio" value="Número:"/>
+                <h:panelGrid columns="2">
+                    <p:inputMask id="inputMaskOficio" mask="999-CI-UASB-99" value="#{cierreBean.inveSeguimiento.segNroComunic}"
+                                 required="true" requiredMessage="Número de memorando requerido" styleClass="campoNoEditado" autocomplete="off"
+                                 onfocus="this.setSelectionRange(0, this.value.length)" style="width:115px;text-align: center"
+                                 disabled="#{cierreBean.inveSeguimiento.segCodigo gt 0}">
+                    </p:inputMask>
+                    <p:message for="inputMaskOficio" display="icon"/>    
+                </h:panelGrid>
+                <p:outputLabel for="fechaMemo" value="Fecha de memorando:"/>
+                <h:panelGrid columns="2" >
+                    <p:calendar id="fechaMemo" value="#{cierreBean.inveSeguimiento.segFechaComunic}"  navigator="true"  styleClass="calendario calendarioLimite" 
+                                pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off" inputStyle="width: 175px"
+                                required="true" requiredMessage="Fecha de memorando requerida"  disabled="#{cierreBean.inveSeguimiento.segCodigo gt 0}">
+                    </p:calendar>
+                    <p:message for="fechaMemo" display="icon" />
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid  columns="1"  styleClass="ui-panelgrid-blankLec form-group" style="width: 100%;">
+            <f:facet name="header">
+                REPOSITORIO
+            </f:facet>
+            <h:panelGrid id="pnlRepo" columns="4" columnClasses="colorLabel,,colorLabel" cellpadding="2"  cellspacing="3" >
+                <p:outputLabel value="Autoriza envío a repositorio ? " />
+                <p:selectOneRadio id="selectOneRadioEnvio" value="#{cierreBean.inveInveProyectoEdit.pryAutorizaEnvioRepos}" style="color:blue"
+                                  disabled="#{cierreBean.inveInveProyectoSelected.pryAutorizaEnvioRepos ne null}">
+                    <f:selectItem itemLabel="Si" itemValue="S" />
+                    <f:selectItem itemLabel="No" itemValue="N" />
+                    <p:ajax  event="change" process="@this" update="pnlRepo" immediate="true" partialSubmit="true" resetValues="true"/>
+                </p:selectOneRadio>             
+                <p:outputLabel for="fechaAutori" value="Fecha autorización:"/>
+                <h:panelGrid columns="2" >
+                    <p:calendar id="fechaAutori" value="#{cierreBean.inveInveProyectoEdit.pryFechaAutorizaEnvio}"  navigator="true"  styleClass="calendario"
+                                pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                required="true" requiredMessage="Fecha autorización requerida" inputStyle="width: 175px"
+                                disabled="#{cierreBean.inveInveProyectoSelected.pryAutorizaEnvioRepos ne null or 
+                                             cierreBean.inveInveProyectoEdit.pryAutorizaEnvioRepos eq null or
+                                             cierreBean.inveInveProyectoEdit.pryAutorizaEnvioRepos eq 'N'}">
+                    </p:calendar>
+                    <p:message for="fechaAutori" display="icon" />
+                </h:panelGrid>                
+                <p:outputLabel for="inputMaskCodRepo" value="Código en repositorio:" />
+                <h:panelGrid columns="2">
+                    <p:inputMask id="inputMaskCodRepo" mask="PI-9999-999" value="#{cierreBean.inveInveProyectoEdit.pryCodigoRepos}"
+                                 required="true" requiredMessage="Código en repositorio requerido" styleClass="campoNoEditado" autocomplete="off"
+                                 onfocus="this.setSelectionRange(0, this.value.length)" style="width:115px;text-align: center"
+                                 disabled="#{cierreBean.inveInveProyectoSelected.pryAutorizaEnvioRepos ne null or 
+                                             cierreBean.inveInveProyectoEdit.pryAutorizaEnvioRepos eq null or
+                                             cierreBean.inveInveProyectoEdit.pryAutorizaEnvioRepos eq 'N'}">
+                    </p:inputMask>
+                    <p:message for="inputMaskCodRepo" display="icon"/>    
+                </h:panelGrid>
+            </h:panelGrid>
+
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

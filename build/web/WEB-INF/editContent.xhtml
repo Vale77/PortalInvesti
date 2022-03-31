@@ -1,0 +1,113 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="dlgEdit" widgetVar="dlgEdit" modal="true"  responsive="true" draggable="false" resizable="false" closeOnEscape="true" 
+              width="#{backingBean.widthEditDisplay}"  height="#{backingBean.heightEditDisplay}" dynamic="true"
+              header="#{backingBean.tituloModalEdicion}" position="#{backingBean.posicionEdicion}">
+        <p:ajax event="close" listener="#{backingBean.handleCloseEdit}" immediate="true" partialSubmit="true" /> 
+        <h:form id="formEdit">
+            <ui:include src="#{backingBean.pantallaEdicion}"/>
+            <style>.ubicaBoton1{width: 80%} .ubicaBoton2{width: 10%}</style>
+            <h:panelGrid id="pnlBotonDlgEdit" columns="3" width="100%" columnClasses="ubicaBoton1,ubicaBoton2">
+                <p:outputLabel/>
+                <p:commandButton  id ="commandButtonGrabarPantEdic"  value="Grabar" styleClass="ui-confirmdialog-yes GreenButton" icon="ui-icon-save" partialSubmit="true" 
+                                  process="@form" actionListener="#{backingBean.updateButton_processAction}" update="formMenuBar formEdit"
+                                  rendered="#{backingBean.visibleBotonGrabar}">
+                    <!--p:confirm header="Confirmación"  icon="ui-icon-warning" /-->
+                </p:commandButton>
+                <p:commandButton value="Cancelar" styleClass="ui-confirmdialog-no RedButton" icon="ui-icon-close" immediate="true"
+                                 action="#{backingBean.cancelarButton()}" oncomplete="PF('dlgEdit').hide();" update="formMenuBar formEdit"
+                                 rendered="#{backingBean.visibleBotonCancelar}">
+                    <p:resetInput target="pnlGrid"/>
+                </p:commandButton>
+            </h:panelGrid>
+        </h:form>
+    </p:dialog>  
+
+    <p:dialog id="dlgEditAdic" widgetVar="dlgEditAdic" modal="true"  responsive="true" draggable="false" resizable="false" visible="#{backingBean.visiblePantallaEdicAdic}"
+              header="#{backingBean.tituloEdicAdic}" rendered="#{backingBean.renderEdicAdic}" position="#{backingBean.posicionEditAdic}" >
+        <h:form id="formEditAdic">
+            <ui:include src="#{backingBean.pantallaEdicionAdic}"/>
+            <p:separator />
+            <div  style="text-align: right">
+                <p:commandButton id="botonAdicGrabar" value="#{backingBean.botonAdicGrabar}" styleClass="ui-confirmdialog-yes GreenButton" icon="ui-icon-save" 
+                                 actionListener="#{backingBean.updateAdicButton_processAction}" update="formEditAdic" rendered="#{backingBean.visibleBotonAdicGrabar}">
+                    <p:confirm header="Confirmación"  icon="ui-icon-warning" disabled="#{backingBean.disabledConfirmEdicAdic}" />
+                </p:commandButton>
+                <p:commandButton value="#{backingBean.botonAdicCancelar}" styleClass="ui-confirmdialog-no RedButton" icon="ui-icon-close" immediate="true"
+                                 action="#{backingBean.resetAdic()}" oncomplete="PF('dlgEditAdic').hide();" rendered="#{backingBean.visibleBotonAdicCancelar}">
+                    <p:resetInput target="dlgEditAdic"/>
+                </p:commandButton>
+            </div>
+        </h:form>
+    </p:dialog>  
+
+    <p:dialog id="dlgEditAdicItem" widgetVar="widgetVarEditAdicItem" modal="true"  responsive="true"  draggable="false" resizable="false"
+              header="#{backingBean.tituloEditAdicItem}" rendered="#{backingBean.renderEditAdicItem}"  position="#{backingBean.posicionEditAdicItem}" >
+        <h:form id="formEditAdicItem">
+            <p:separator />
+            <ui:include src="#{backingBean.pantallaEditAdicItem}"/>
+            <p:separator />
+            <div  style="text-align: right">
+                <p:commandButton id="botonEditAdicItemGrabar" value="#{backingBean.botonEditAdicItemGrabar}" styleClass="ui-confirmdialog-yes GreenButton" icon="ui-icon-save" 
+                                 actionListener="#{backingBean.updateEditAdicItemButton_processAction}" update="formEditAdicItem">
+                    <p:confirm header="Confirmación"  icon="ui-icon-warning" disabled="#{backingBean.disabledConfirmEditAdicItem}" />
+                </p:commandButton>
+                <p:commandButton value="#{backingBean.botonEditAdicItemCancelar}" styleClass="ui-confirmdialog-no RedButton" icon="ui-icon-close" immediate="true"
+                                 action="#{backingBean.resetEditAdicItem()}" oncomplete="PF('widgetVarEditAdicItem').hide();" >
+                    <p:resetInput target="dlgEditAdicItem"/>
+                </p:commandButton>
+            </div>
+        </h:form>
+    </p:dialog>     
+
+    <p:dialog id="dialogMensaje" header="Mensaje" widgetVar="mensajeWidget" modal="true" height="auto" responsive="true">
+        <div align="center" >
+            <h:panelGrid columns="2" style="text-align: center">
+                <h:graphicImage name="#{backingBean.iconMensaje}" library="images" />                            
+                <p:outputLabel value="#{backingBean.mensaje}" escape="false"/>
+            </h:panelGrid><br/>
+            <p:commandButton  value="Aceptar" icon="ui-icon-cancel" title="Cerrar" process="@this" 
+                              onclick="PF('mensajeWidget').hide();"/>
+        </div>
+    </p:dialog>   
+
+    <p:dialog id="pdfDialog" widgetVar="pdfWidget" modal="true" responsive="true"  header="#{backingBean.tituloPDF}" closeOnEscape="true" 
+              rendered="#{backingBean.renderPDF}" dynamic="true" position="center"  draggable="false" resizable="false" 
+              showEffect="explode" hideEffect="explode" width="70%" height="400" >
+        <p:ajax event="close" listener="#{backingBean.handleClose}" immediate="true" partialSubmit="true" /> 
+
+        <!--div id="vistaPDF" style="height: 100%"></div>
+        <script>
+            PDFObject.embed('http://localhost:8080/ServletImpr/Print?reporte=report1', '#vistaPDF');
+        </script-->
+        <!--iframe id="iFramePdf" src="#{facesContext.externalContext.requestContextPath}/pages/delay.xhtml" frameborder="1" 
+                width="100%" height="100%"/-->
+        <!--data="#{facesContext.externalContext.requestContextPath}/pages/delay.xhtml"/>-->
+
+        <object id="iFramePdf"  height="100%" width="100%" class="myIframe" standby="...... Espere un momento por favor" 
+                data="#{backingBean.renderPDF eq null ? '':facesContext.externalContext.requestScheme.concat('://').concat(facesContext.externalContext.requestServerName).concat(':').concat(facesContext.externalContext.requestServerPort).concat('/ServletImpr/Print?').concat(sessionScope.urlRep)}">
+            <!--param name="#zoom" value="0.5"/-->
+            <!--p><b>Example fallback content</b>: This browser does not support PDFs. Please download the PDF to view it: <a href="/pdf/sample-3pp.pdf">Download PDF</a>.</p-->
+            <h:panelGroup rendered="#{!sessionScope.urlRep.contains('tipo=pdf')}">
+                <div align="center" style="padding-top: 100px;">
+                    <h:outputLabel value="Archivo en formato MSOffice" style="font-size: 14pt;"/><br/><br/>
+                    <h:outputLink style="color:blue;font-size: 14pt;" value="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}/ServletImpr/Print?#{sessionScope.urlRep}">Click Aqui</h:outputLink><br/><br/>
+                    <h:outputLabel value="para descargar el archivo." style="font-size: 14pt;"/><br/><br/>
+                    <h:outputLabel value="Esto puede tardar algunos minutos..." style="font-size: 14pt;"/>  
+                </div>
+            </h:panelGroup>                   
+        </object>
+
+        <!--script type="text/javascript" language="javascript">
+            $('.myIframe').css('height', ($(window).height() * (0.6)) + 'px');
+        </script-->
+
+    </p:dialog>
+
+
+
+</ui:composition>

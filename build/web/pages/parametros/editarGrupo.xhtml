@@ -1,0 +1,17 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:focus context="pnlGrid" />
+    <p:panelGrid id="pnlGrid" columns="3" styleClass="ui-panelgrid-blank form-group">
+        <p:outputLabel for="nombre" value="Nombre grupo:" styleClass="colorLabel"/>
+        <p:inputText id="nombre" value="#{gruposBean.inveGrupoEdit.grpNombre}" autocomplete="off"  required="true"
+                     requiredMessage="Nombre grupo obligatorio" style="width: 300px;"
+                     onfocus="this.setSelectionRange(0, this.value.length)">
+            <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+        </p:inputText>
+        <p:message for="nombre" display="icon" />
+    </p:panelGrid>
+</ui:composition>

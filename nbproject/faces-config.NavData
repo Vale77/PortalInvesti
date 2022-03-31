@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scene Scope="Project" version="2">
+    <Scope Scope="Faces Configuration Only"/>
+    <Scope Scope="Project">
+        <Node id="pages/parametros/editarGrupo.xhtml" x="650" y="300" zoom="true"/>
+        <Node id="error/sessionExpired.xhtml" x="1824" y="860" zoom="true"/>
+        <Node id="error/access.xhtml" x="1700" y="778" zoom="true"/>
+        <Node id="pages/parametros/ambitoGeo.xhtml" x="150" y="150" zoom="true"/>
+        <Node id="pages/parametros/editarAmbitoGeo.xhtml" x="400" y="450" zoom="true"/>
+        <Node id="*" x="1900" y="600" zoom="true"/>
+        <Node id="login.xhtml" x="871" y="587" zoom="false"/>
+        <Node id="error/404.xhtml" x="1400" y="450" zoom="true"/>
+        <Node id="pages/delay.xhtml" x="1400" y="150" zoom="true"/>
+        <Node id="pages/parametros/grupos.xhtml" x="650" y="150" zoom="true"/>
+        <Node id="pages/empty.xhtml" x="650" y="900" zoom="true"/>
+        <Node id="pages/principal.xhtml" x="1650" y="600" zoom="true"/>
+        <Node id="error/error.xhtml" x="400" y="150" zoom="true"/>
+    </Scope>
+    <Scope Scope="All Faces Configurations"/>
+</Scene>

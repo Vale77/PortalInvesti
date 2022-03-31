@@ -1,0 +1,203 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+     xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <style type="text/css">
+
+        body.layout-compact .ui-wizard .ui-wizard-step-titles > li {padding: 3px 14px; font-size: 12px}
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;font-size: 13px}
+        .colorCol{color: darkblue;font-size: 12px;}
+        .colAncho150{width: 150px;}
+        body.layout-compact .ui-fileupload .ui-fileupload-buttonbar{padding: 0px;background-color: transparent;border: none}
+        body.layout-compact .ui-fileupload .ui-fileupload-buttonbar .ui-button{font-size: 12px;}
+        .ui-fileupload-content{padding: 0px 0px;}
+        .ui-fileupload-messages{font-size: 11px;}
+        .ui-fileupload-files{margin: 0px 0px;}
+        ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+            color:    #909; font-size: 12px
+        }
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color:    #909;font-size: 12px; opacity:  1;
+        }
+        ::-moz-placeholder { /* Mozilla Firefox 19+ */
+            color:    #909;font-size: 12px; opacity:  1;
+        }
+        :-ms-input-placeholder { /* Internet Explorer 10-11 */
+            color:    #909;font-size: 12px; 
+        }
+        ::-ms-input-placeholder { /* Microsoft Edge */
+            color:    #909;font-size: 12px; 
+        }
+        ::placeholder { /* Most modern browsers support this now. */
+            color:    #909;font-size: 12px; 
+        }        
+        body.layout-compact .ui-button.ui-button-icon-only{width: 20px;height: 20px}
+        body.layout-compact .ui-dataTable-Pres.ui-datatable-scrollable thead tr th{font-size: 12px;background-color: #e8e1e1;padding: 3px 5px;}
+        body.layout-compact .ui-dataTable-Pres tbody tr td{padding: 3px 5px;font-size: 12px;}
+        body.layout-compact .ui-dataTable-Pres tbody tr.ui-widget-content td{padding: 3px 5px;}
+        body.layout-compact .ui-dataTable-Pres .ui-datatable-summaryrow{font-size: 13px;text-align: right}
+        .ui-inputfieldNumeros{text-align: center}
+        .campoNoEditado .ui-inputfield.ui-state-disabled{opacity: 1.0;color: black}
+        body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue;font-size: 12px; width: 175px}
+        body.layout-compact .calendario .ui-inputfield.ui-state-disabled{opacity: 1.0}
+    </style>
+    <p:panelGrid  columns="2" columnClasses="colorLabel colAncho150,colorCol" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+        <f:facet name="header">
+            DATOS DEL PROYECTO DE INVESTIGACIÓN
+        </f:facet>
+        <p:outputLabel value="Título:"/>
+        <p:outputLabel value="#{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.pryCodigoCi} - #{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.pryTitulo}" style="text-transform: uppercase"/>
+        <p:outputLabel value="Nombre Investigador:" />
+        <p:outputLabel style="color:brown; font-weight: bold"
+                       value="#{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinPersona.perPrimerApellido} #{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinPersona.perSegundoApellido} #{informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinPersona.perNombres}"/>
+    </p:panelGrid>
+    <p:panelGrid id="pnlGrid" columns="1" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group" style="width: 100%;">
+        <p:wizard id="wizardPry" flowListener="#{informeFinalBean.onFlowProcess}"  backLabel="Anterior" nextLabel="Siguiente"   widgetVar="widgetVarWizardInfoFinal">
+            <p:tab id="infoProy" title="2. FICHA DE ENTREGA">
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho175 colorLabel,,">
+                    <p:outputLabel value="Nuevo título:"/>
+                    <p:panelGrid columns="1">
+                        <p:scrollPanel mode="native" style="width:100%;height:60px">
+                            <p:panelGrid columns="2" >
+                                <p:inputTextarea id="tituloFinal" rows="3" cols="90" value="#{informeFinalBean.tituloFinal}" 
+                                                 style="opacity: 1.0;color: #2196F3;width: 100%;" onfocus="this.setSelectionRange(0, this.value.length)"
+                                                 disabled="#{not fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE') ? (informeFinalBean.inveValoracionSelected.inveInformeOper.iopUsuarioCrea ne null) : false}" 
+                                                 counter="displayTextTitulo" maxlength="1000" counterTemplate="{0} caracteres disponibles" >
+                                    <p:ajax event="change"/>
+                                    <!--f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/-->
+                                    <p:watermark for="tituloFinal" value="(en caso de haber cambiado)" id="watermarkTituloFinal"/>
+                                </p:inputTextarea>
+                                <p:message for="tituloFinal" display="icon" />    
+                            </p:panelGrid>
+                        </p:scrollPanel>
+                        <h:outputText id="displayTextTitulo" style="color: brown;font-size: 12px;font-weight: bold"/>
+                    </p:panelGrid>
+                    <p:outputLabel for="fechaPresentacion" value="Fecha de Presentación"/>
+                    <p:panelGrid columns="2" >
+                        <p:calendar id="fechaPresentacion" value="#{informeFinalBean.infoOperativoEdit.iopFechaCrea}"  navigator="true"  styleClass="calendario" 
+                                    pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                    required="true" requiredMessage="Fecha de Presentación" disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopUsuarioCrea ne null}">
+                            <p:ajax event="dateSelect"/>            
+                        </p:calendar>
+                        <p:message for="fechaPresentacion" display="icon" />
+                    </p:panelGrid>
+                    <p:outputLabel value="Dedicación a la investigación" style="color:brown"/>
+                    <p:separator/>
+                    <p:outputLabel for="selectOneMenuTiempo" value="Tiempo de dedicación:"/>
+                    <p:panelGrid columns="2">
+                        <p:selectOneRadio id="selectOneMenuTiempo" value="#{informeFinalBean.infoOperativoEdit.prinTipoDedicacion}" style="color:blue;"
+                                          required="true" requiredMessage="Tiempo de dedicación es obligatoria"  converter="tipoDedicacionConverter"
+                                          disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopUsuarioCrea ne null}">
+                            <f:selectItems value="#{informeFinalBean.listaTipoDedicacion}" var="tp" itemLabel="#{tp.tdeDescripcion}"/>
+                        </p:selectOneRadio>   
+                        <p:message for="selectOneMenuTiempo" display="icon" />
+                    </p:panelGrid>
+                    <p:outputLabel for="horasEstimadas" value="Horas de dedicación semanales:"/>
+                    <p:panelGrid columns="2">
+                        <p:inputNumber id="horasEstimadas" value="#{informeFinalBean.infoOperativoEdit.iopHorasEstimSeman}" autocomplete="off" styleClass="campoNoEditado"
+                                       validatorMessage="Nro. de horas debe ser mayor a 0" disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopUsuarioCrea ne null}"
+                                       required="true" requiredMessage="Horas de dedicación semanales obligatorias"  size="4" decimalPlaces="0"  
+                                       onfocus="this.setSelectionRange(0, this.value.length)" >
+                            <f:validateLongRange minimum="1"/>
+                        </p:inputNumber>
+                        <p:message for="horasEstimadas" display="icon" />        
+                    </p:panelGrid>  
+                    <p:outputLabel for="mesesEstimadas" value="Meses de dedicación:"/>
+                    <p:panelGrid columns="2">
+                        <p:inputNumber id="mesesEstimadas" value="#{informeFinalBean.infoOperativoEdit.iopMesesEstim}" autocomplete="off" 
+                                       disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopUsuarioCrea ne null}" styleClass="campoNoEditado"
+                                       validatorMessage="Meses de dedicación debe ser mayor a 0" decimalSeparator="." thousandSeparator=","
+                                       required="true" requiredMessage="Meses de dedicación obligatorio"  size="4" decimalPlaces="2"  
+                                       onfocus="this.setSelectionRange(0, this.value.length)">
+                            <f:validateLongRange minimum="1"/>
+                        </p:inputNumber>
+                        <p:message for="mesesEstimadas" display="icon" />        
+                    </p:panelGrid>  
+                </p:panelGrid>
+            </p:tab>
+            <p:tab id="infoDocumento" title="3. DOCUMENTO">
+                <p:panel id="grid" style=" border: none" >
+                    <p:outputLabel for="outputTextExtencion" value="Informe final:" styleClass="colorLabel"/>
+                    <h:panelGrid id="pnlArchivo" columns="2" style="width: 100%;">
+                        <p:inputText id="outputTextArchivo" value="#{informeFinalBean.prinDocumento.docNombre}" style="color: #2196F3;width: 100%;opacity: 1.0" disabled="true"/>
+                        <p:message for="outputTextExtencion" display="icon"/>    
+                    </h:panelGrid>
+                    <p:fileUpload fileUploadListener="#{informeFinalBean.subirAchivo}" mode="advanced" update="pnlArchivo outputTextExtencion"
+                                  immediate="true" auto="true" disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopUsuarioCrea ne null}"
+                                  fileLimitMessage="Solo se permite 1 archivo a la vez" required="true" requiredMessage="Informe Final de Investigación requerido" 
+                                  allowTypes="/(\.|\/)(doc|docx)$/" sizeLimit="15360000"  invalidFileMessage="Archivo no valido" 
+                                  label="Seleccionar archivo" dragDropSupport="false" cancelLabel="Cancelar" uploadLabel="Cargar"
+                                  invalidSizeMessage="Tamaño no permitido del archivo:&lt;/br&gt;" />
+                </p:panel>    
+                <p:inputText  id="outputTextExtencion" value="#{informeFinalBean.prinDocumento.docNombre}" disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopUsuarioCrea ne null}"
+                              style="visibility: hidden;height: 0px;" required="true" requiredMessage="Informe Final de Investigación requerido"/>
+            </p:tab>
+            <p:tab id="infoFinan" title="4. INFORME FINANCIERO">
+                <p:remoteCommand name="refreshAddBoton" update="formEdit:dataTablePresup" />
+                <p:dataTable id="dataTablePresup" var="rubro" value="#{informeFinalBean.listaPresup}"  scrollable="true" scrollHeight="300" 
+                             rowKey="#{rubro.invePresupuestoPK}" widgetVar="widgetVarDataTablePresup" rowIndexVar="ordinal" styleClass="ui-dataTable-Pres"
+                             sortBy="#{1}" emptyMessage="No ha registrado rubro algúno en este proyecto" editable="true" >
+                    <p:ajax event="rowEditInit" listener="#{informeFinalBean.rowEditInit}" oncomplete="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','hidden')});"/>
+                    <p:ajax event="rowEdit" oncomplete="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','visible')});refreshAddBoton();" />
+                    <p:ajax event="rowEditCancel"  onstart="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','visible')});"/>
+                    <p:column headerText="N°" width="2%" style="text-align: center">
+                        <h:outputText value="#{ordinal+1}" />                                                
+                    </p:column>         
+                    <p:column headerText="Rubro"  width="20%" >
+                        <h:outputText value="#{rubro.inveRubro.rubNombre}" style="color: blue" styleClass="colorLabel"/>
+                    </p:column>
+                    <p:column headerText="Descripción"  width="57%" >
+                        <h:outputText value="#{rubro.preDescripcion}" />
+                    </p:column>
+                    <p:column headerText="Monto Aprobado" width="8%">
+                        <div align="right">
+                            <h:outputFormat value="$ {0}" style="font-weight: bold;color:blue;" rendered="#{rubro.preMontoAprob ne null}" >
+                                <f:param value="#{rubro.preMontoAprob}"/>
+                            </h:outputFormat>
+                        </div>
+                    </p:column>   
+                    <p:column headerText="Gasto" width="8%">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <div align="right">
+                                    <h:outputFormat value="$ {0}" style="font-weight: bold;color:blue;" rendered="#{rubro.preMontoGastado ne null}" >
+                                        <f:param value="#{rubro.preMontoGastado}"/>
+                                    </h:outputFormat>
+                                </div>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputNumber id="monto" value="#{rubro.preMontoGastado}" autocomplete="off" style="text-align: center" 
+                                               inputStyleClass="ui-inputfieldNumeros" required="true" requiredMessage="Monto obligatorio"
+                                               decimalSeparator="." decimalPlaces="2"  symbol="$" thousandSeparator="," size="8"
+                                               onfocus="this.setSelectionRange(0, this.value.length)"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>                       
+                    <p:column headerText="Editar" width="5%" style="text-align: center">
+                        <p:rowEditor/>
+                    </p:column>            
+                    <p:summaryRow id="total">
+                        <p:column colspan="3">
+                            <h:outputText value="Total:" />
+                        </p:column>
+                        <p:column>
+                            <h:outputFormat value="$ {0}" >
+                                <f:param value="#{informeFinalBean.sumaTotal}"/>
+                            </h:outputFormat>
+                        </p:column>
+                        <p:column>
+                            <h:outputFormat value="$ {0}" >
+                                <f:param value="#{informeFinalBean.sumaTotalGasto}"/>
+                            </h:outputFormat>
+                        </p:column>                        
+                    </p:summaryRow>
+                </p:dataTable>  
+            </p:tab>
+        </p:wizard>
+
+    </p:panelGrid>
+</ui:composition>

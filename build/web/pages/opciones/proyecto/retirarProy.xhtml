@@ -1,0 +1,25 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:focus context="pnlGrid" />
+    <p:panelGrid id="pnlGrid" columns="2"  styleClass="ui-panelgrid-blank form-group" columnClasses="colorLabel">
+        <p:outputLabel for="estado" value="Retirar proyecto &lt;span style='color:brown;'&gt;#{proyectoBean.inveProyectoEdit.pryCodigoCi}&lt;/span&gt;:" escape="false"/>
+        <p:panelGrid columns="2" >
+            <p:selectBooleanCheckbox id="estado" value="#{proyectoBean.valorEstado}">
+                <p:ajax update="formEditAdic" listener="#{proyectoBean.habilitarRetiro}"/>
+            </p:selectBooleanCheckbox>
+            <p:message for="estado" display="icon" />
+        </p:panelGrid>
+        <p:outputLabel for="fechaRetiro" value="Fecha de Retiro:"/>
+        <p:panelGrid columns="2" >
+            <p:calendar id="fechaRetiro" value="#{proyectoBean.inveProyectoEdit.pryFechaEstado}"  navigator="true"  styleClass="calendario" 
+                        pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                        required="true" requiredMessage="Fecha de Retiro" >
+                <p:ajax event="dateSelect"/>            
+            </p:calendar>
+            <p:message for="fechaRetiro" display="icon" />
+        </p:panelGrid>
+    </p:panelGrid>
+</ui:composition>

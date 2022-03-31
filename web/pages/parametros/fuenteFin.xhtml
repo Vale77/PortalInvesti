@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{fuenteFinBean}"/>
+    </ui:define>
+
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{fuenteFinBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            body.layout-compact .ui-dataTable-fuente thead tr th{font-size: 13px;background-color: #e8e1e1;}
+            body.layout-compact .ui-dataTable-fuente tbody tr {font-size: 12px;}
+        </style>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Fuentes de financiamiento</h3>
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:dataTable id="dataTableAmbito" var="fuente" value="#{fuenteFinBean.listaFuenteFinan}" selectionMode="single" reflow="true" 
+                             selection="#{fuenteFinBean.selectedRow}" rowKey="#{fuente.finCodigo}" scrollable="true" scrollHeight="350" 
+                             styleClass="ui-dataTable-fuente" widgetVar="widgetDataTableFuente">
+                    <p:ajax event="rowSelect" listener="#{fuenteFinBean.onRowSelect}" update=":formMenuBar"/>
+                    <p:ajax event="rowUnselect" listener="#{fuenteFinBean.onRowUnselect}" update=":formMenuBar"/>
+                    <p:column headerText="Código" width="5%" style="text-align: center">
+                        <h:outputText value="#{fuente.finCodigo}" style="color: brown;font-weight: bold"/>
+                    </p:column>
+                    <p:column headerText="Fuente de financiamiento" width="85%">
+                        <h:outputText value="#{fuente.finNombre}" style="color:#{agente.ageActivo eq 'A' ? 'blue':'normal'};"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+
+
+</ui:composition>

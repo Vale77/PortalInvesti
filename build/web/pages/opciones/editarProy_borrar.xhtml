@@ -1,0 +1,61 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style type="text/css">
+
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;}
+        .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue}
+    </style>
+    <p:focus context="pnlGrid" />
+    <p:panelGrid id="pnlGrid" columns="1" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group"> 
+        <p:panelGrid  columns="4" >
+            <p:outputLabel value="Nombres:" styleClass="colorLabel" />
+            <p:outputLabel value="#{proyectoBean.inveProyectoEdit.prinPersona.perNombres}" style="color: blue"/>
+            <p:outputLabel value="Apellidos:" styleClass="colorLabel" />
+            <p:outputLabel value="#{proyectoBean.inveProyectoEdit.prinPersona.perPrimerApellido} #{proyectoBean.inveProyectoEdit.prinPersona.perSegundoApellido}" style="color: blue"/>
+        </p:panelGrid>
+        <p:panelGrid  columns="4" >
+            <p:outputLabel value="Año:" styleClass="colorLabel" />
+            <p:outputLabel value="#{proyectoBean.inveProyectoEdit.pryAnioAcad}" style="color: blue"/>
+            <p:outputLabel value="Área académica:" styleClass="colorLabel"/>
+            <p:outputLabel value="#{proyectoBean.inveProyectoEdit.area.areaNombre}" style="color: brown"/>
+        </p:panelGrid>
+    </p:panelGrid>
+    <p:panelGrid  columns="2" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group">
+        <p:outputLabel value="Título:" styleClass="colorLabel"/>
+        <p:outputLabel value="#{proyectoBean.inveProyectoEdit.pryTitulo}" style="color: blue"/>
+    </p:panelGrid>
+    <p:separator />
+    <p:panelGrid columns="2" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group"  >
+        <h:panelGrid columns="1" cellpadding="0" cellspacing="0">
+            <p:scrollPanel mode="native" style="height: 400px;width: 275px;border: none">
+                <p:selectManyCheckbox  value="#{proyectoBean.selectedItemsEsquema}" layout="responsive" columns="1" >
+                    <f:selectItems value="#{proyectoBean.esquema}" var="itemEsquema" itemLabel="#{itemEsquema}" itemValue="#{itemEsquema}" />
+                </p:selectManyCheckbox>
+            </p:scrollPanel>
+            <p:separator />
+            <h:panelGrid columns="2">
+                <p:outputLabel value="Estado:" styleClass="colorLabel"/>
+                <p:selectOneMenu id="selectOneMenuOk" value="#{proyectoBean.inveProyectoEdit.pryEstadoReg}"  styleClass="ui-selectonemenuUASB">
+                    <f:selectItem itemLabel="Registrado" itemValue="R" />
+                    <f:selectItem itemLabel="Aceptado" itemValue="A" />
+                    <f:selectItem itemLabel="Rechazado" itemValue="X" />
+                </p:selectOneMenu>   
+            </h:panelGrid>
+        </h:panelGrid>
+        <iframe  src="https://docs.google.com/gview?url=http://aplicaciones.uasb.edu.ec:8080/App/test.docx#{proyectoBean.embedded}" 
+                 frameborder="1" height="450" width="700"></iframe>
+        <!--object  class="myIframe" standby="...... Espere un momento por favor" 
+                 style="vertical-align: top;border-color: red; border-style: inset; border-width: thin"
+                 type="text/html" 
+                 data="#{proyectoBean.renderPDF eq null ? '':facesContext.externalContext.requestScheme.concat('://').concat(facesContext.externalContext.requestServerName).concat(':').concat(facesContext.externalContext.requestServerPort).concat('/ServletImpr/PrintDoc?').concat(proyectoBean.archivo)}">
+        </object>
+                <script type="text/javascript" language="javascript">
+            $('.myIframe').css('width', ($(window).width() * (0.370)) + 'px');
+        </script-->
+    </p:panelGrid>
+</ui:composition>

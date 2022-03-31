@@ -1,0 +1,225 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style>
+        ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+            text-transform: lowercase;
+        }
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            text-transform: lowercase;
+        }
+        ::-moz-placeholder { /* Mozilla Firefox 19+ */
+            text-transform: lowercase;
+        }
+        :-ms-input-placeholder { /* Internet Explorer 10-11 */
+            text-transform: lowercase;
+        }
+        ::-ms-input-placeholder { /* Microsoft Edge */
+            text-transform: lowercase;
+        }
+        ::placeholder { /* Most modern browsers support this now. */
+            text-transform: lowercase;
+        }
+        .ui-panelgrid-blankPersona.form-group .ui-panelgrid-cell{padding: 0px 5px;font-size: 12px; border: none}
+        .ui-panelgrid-blankPersona tbody tr.ui-widget-content {border: none;}
+    </style>
+    <p:focus context="grid" />
+    <p:remoteCommand name="setfocoNroDoc" immediate="true" oncomplete="document.getElementById('formEditAdic:inputTextNroDoc').focus();"/>
+    <p:remoteCommand name="setfocoEmail"  immediate="true" oncomplete="document.getElementById('formEditAdic:inputTextMail').focus();"/>
+    <p:remoteCommand name="setfocoNombre" immediate="true" oncomplete="document.getElementById('formEditAdic:inputTextNombre').focus();"/>   
+    <p:panelGrid id="grid" styleClass="ui-panelGridDatos">
+        <p:panelGrid id="pnlPerso" columns="4"  columnClasses="colorLabel,,colorLabel,,colorLabel,,colorLabel"  styleClass="ui-panelgrid-blankPersona form-group" style="width: 100%">
+            <f:facet name="header">
+                DATOS PERSONALES
+            </f:facet>  
+            <p:outputLabel for="selectOneMenuTipo" value="Tipo documento" />
+            <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                <p:selectOneMenu id="selectOneMenuTipo" value="#{lectorInfoFinalBean.tipoDoc}" widgetVar="widgetVarTipo"
+                                 styleClass="ui-selectonemenuUASB campoNoEditado" required="true" requiredMessage="Tipo documento obligatorio">
+                    <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItem itemLabel="CÉDULA" itemValue="C"/>
+                    <f:selectItem itemLabel="PASAPORTE" itemValue="P" />
+                    <p:ajax event="change"  update="outputLabelTipoDoc inputTextNroDoc messageTipo " immediate="true" partialSubmit="true" oncomplete="setfocoNroDoc();"/>
+                </p:selectOneMenu>
+                <p:message id="messageTipo" for="selectOneMenuTipo"  display="icon"/>
+            </h:panelGrid>
+            <p:outputLabel id="outputLabelTipoDoc" for="inputTextNroDoc"  
+                           value="#{lectorInfoFinalBean.tipoDoc eq null ? '': lectorInfoFinalBean.tipoDoc eq 'C' ? 'Cédula Nro:':'Pasaporte Nro:'}"/>
+            <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                <p:inputText id="inputTextNroDoc"  value="#{lectorInfoFinalBean.nroDocumento}" required="true" 
+                             requiredMessage="#{lectorInfoFinalBean.tipoDoc eq 'C' ? 'Cédula Nro:':'Pasaporte Nro:'} obligatorio" 
+                             disabled="#{lectorInfoFinalBean.tipoDoc eq null or lectorInfoFinalBean.nuevoLector.perCodigo ne null}" styleClass="campoNoEditado" 
+                             maxlength="#{lectorInfoFinalBean.tipoDoc eq 'C'? 10:20}" autocomplete="off" onfocus="this.setSelectionRange(0, this.value.length)"
+                             style="width:125px;text-transform: uppercase;">
+                    <p:ajax event="change" update="msgNroDoc inputTextNombre" listener="#{lectorInfoFinalBean.txt_NroDocValueChange()}" />
+                    <f:attribute name="tipoDocumento" value="#{lectorInfoFinalBean.tipoDoc}"/>
+                    <f:validator validatorId="ec.edu.uasb.validator.CedulaValidator"/>
+                    <f:validator validatorId="ec.edu.uasb.investigacion.validator.buscarLectorValidator"/>                    
+                </p:inputText>
+                <p:message for="inputTextNroDoc" id="msgNroDoc" />       
+            </h:panelGrid>
+            <p:outputLabel for="inputTextNombre" value="Nombres:" />
+            <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                <p:inputText id="inputTextNombre" required="true" requiredMessage="Nombres obligatori" styleClass="campoNoEditado"
+                             style="text-transform: uppercase;width:250px;"  autocomplete="off"  onfocus="this.setSelectionRange(0, this.value.length)"
+                             disabled="#{lectorInfoFinalBean.tipoDoc eq null or lectorInfoFinalBean.nuevoLector.perCodigo ne null}" 
+                             value="#{lectorInfoFinalBean.nuevoLector.perNombres}">
+                    <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                </p:inputText>
+                <p:message for="inputTextNombre" display="icon" />                               
+            </h:panelGrid>
+            <p:outputLabel for="inputTextApellido1" value="Primer apellido:" />        
+            <h:panelGrid columns="5" cellpadding="2" cellspacing="0">
+                <p:inputText id="inputTextApellido1" required="true" requiredMessage="Primer apellido obligatorio" styleClass="campoNoEditado"
+                             style="text-transform: uppercase;width:150px;" autocomplete="off" 
+                             disabled="#{lectorInfoFinalBean.tipoDoc eq null or lectorInfoFinalBean.nuevoLector.perCodigo ne null}" 
+                             value="#{lectorInfoFinalBean.nuevoLector.perPrimerApellido}"  onfocus="this.setSelectionRange(0, this.value.length)">
+                    <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                </p:inputText>
+                <p:message for="inputTextApellido1" display="icon" />  
+                <p:outputLabel for="inputTextApellido2" value="Segundo apellido:" styleClass="colorLabel"/> 
+                <p:inputText id="inputTextApellido2" style="text-transform: uppercase;width:150px;" autocomplete="off" styleClass="campoNoEditado" 
+                             value="#{lectorInfoFinalBean.nuevoLector.perSegundoApellido}"
+                             disabled="#{lectorInfoFinalBean.tipoDoc eq null}" 
+                             required="true" requiredMessage="Segundo apellido obligatorio"  onfocus="this.setSelectionRange(0, this.value.length)">
+                    <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                </p:inputText>
+                <p:message for="inputTextApellido2" display="icon" />     
+            </h:panelGrid>
+            <p:outputLabel  value="Correo personal:" for="inputTextMail"/>
+            <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                <p:inputText id="inputTextMail" value="#{lectorInfoFinalBean.nuevoLector.perEmail}" autocomplete="off" styleClass="campoNoEditado"
+                             title="ejemplo: 'nombre@dominio.com', sólo un email principal "  style="text-transform: lowercase;width:300px;"
+                             onfocus="this.setSelectionRange(0, this.value.length)" required="true" requiredMessage="Correo personal obligatorio" >
+                    <f:validator validatorId="ec.edu.uasb.validator.EmaiValidator"/>
+                </p:inputText>        
+                <p:message for="inputTextMail" display="icon"/>                                   
+            </h:panelGrid>
+            <p:outputLabel  value="Celular:" for="inputTextCelular"/>
+            <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                <p:inputMask id="inputTextCelular" value="#{lectorInfoFinalBean.nuevoLector.perCelular}"
+                             required="true" requiredMessage="Celular obligatorio"
+                             style="width:125px;text-align: center"  mask="9999999999" autocomplete="off"/>
+                <p:message for="inputTextMail" display="icon"/>    
+            </h:panelGrid>
+            <p:outputLabel value="Nacionalidad:" for="selectOneMenuPaisNac"/>
+            <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                <p:selectOneMenu id="selectOneMenuPaisNac" required="true" requiredMessage="Nacionalidad obligatoria" converter="paisConverter"
+                                 disabled="#{lectorInfoFinalBean.nuevoLector.perCodigo ne null and lectorInfoFinalBean.personaOrig.prinNacionalidad ne null}"
+                                 value="#{lectorInfoFinalBean.nuevoLector.prinNacionalidad}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarNac">
+                    <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{lectorInfoFinalBean.listaPais}" var="paisDom" itemValue="#{paisDom}" itemLabel="#{paisDom.paiNombre}" />
+                    <p:ajax  event="change" process="@this" />
+                </p:selectOneMenu>                                
+                <p:message for="selectOneMenuPaisNac" display="icon" /> 
+            </h:panelGrid>
+            <p:outputLabel value="Fecha nacimiento:" for="fechaNac"/>
+            <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                <p:calendar id="fechaNac" value="#{lectorInfoFinalBean.nuevoLector.perFechaNacimiento}"  navigator="true"  styleClass="calendario" 
+                            disabled="#{lectorInfoFinalBean.nuevoLector.perCodigo ne null and lectorInfoFinalBean.personaOrig.perFechaNacimiento ne null}"
+                            pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  yearRange="c-60:c"
+                            showOn="button" autocomplete="off" required="true" requiredMessage="Fecha de nacimiento obligatoria" >
+                    <p:ajax  event="dateSelect" process="@this" />
+                </p:calendar>
+                <p:message for="fechaNac" display="icon" />
+            </h:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid id="panelDomicilio" columns="1"  styleClass="ui-panelgrid-blankPersona form-group" style="width: 100%"  >
+            <f:facet name="header">
+                DOMICILIO 
+            </f:facet>
+            <p:panelGrid columns="4" styleClass="ui-panelgrid-blank" columnClasses="colorLabel,,colorLabel" >
+                <p:outputLabel value="País:" for="selectOneMenuPais"/>
+                <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                    <p:selectOneMenu id="selectOneMenuPais" required="true" requiredMessage="País de domicilio obligatorio" converter="paisConverter"
+                                     value="#{lectorInfoFinalBean.paisDom}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarPai">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{lectorInfoFinalBean.listaPais}" var="paisDom" itemValue="#{paisDom}" itemLabel="#{paisDom.paiNombre}"/>
+                        <p:ajax  event="change"  process="@this" partialSubmit="true" update="selectOneMenuCiud"  listener="#{lectorInfoFinalBean.cargarCiudades()}" />
+                    </p:selectOneMenu>                                
+                    <p:message for="selectOneMenuPais" display="icon" />   
+                </h:panelGrid>
+                <p:outputLabel value="Ciudad:" for="selectOneMenuCiud" />
+                <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                    <p:selectOneMenu id="selectOneMenuCiud" required="true" requiredMessage="Ciudad de domicilio requerida" converter="ciudadConverter"
+                                     value="#{lectorInfoFinalBean.ciudadDom}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarCiu">
+                        <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" />
+                        <f:selectItems value="#{lectorInfoFinalBean.listaCiudades}"  var="ciudadDom" itemValue="#{ciudadDom}" itemLabel="#{ciudadDom.ciuNombre}"/>
+                        <f:attribute name="pais" value="#{lectorInfoFinalBean.paisDom}" />
+                        <p:ajax  event="change"  process="@this"/>
+                    </p:selectOneMenu>                                
+                    <p:message for="selectOneMenuCiud" display="icon" />   
+                </h:panelGrid>
+            </p:panelGrid>
+            <p:panelGrid columns="4" styleClass="ui-panelgrid-blank" columnClasses="colorLabel,,colorLabel">
+                <p:outputLabel  value="Dirección:" for="direcDom"/>
+                <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                    <p:inputText id="direcDom" value="#{lectorInfoFinalBean.nuevoLector.perDirecDom}" autocomplete="off" style="width:600px;"
+                                 required="true" requiredMessage="Dirección de domicilio obligatorio" styleClass="campoNoEditado"  onfocus="this.setSelectionRange(0, this.value.length)">
+                        <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                        <p:watermark for="direcDom" value="(calle, No., intersección)" id="watermarkDirDom" />
+                    </p:inputText>
+                    <p:message for="direcDom" display="icon" />                                   
+                </h:panelGrid>
+                <p:outputLabel  value="Teléfono:"/>
+                <p:inputMask id="direcDomTelef" value="#{lectorInfoFinalBean.nuevoLector.perTelefonoDom}" 
+                             style="width:150px;" mask="?9999999999999"  autocomplete="off" />
+            </p:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid id="panelTitulo" columns="1"  styleClass="ui-panelgrid-blankPersona form-group" style="width: 100%" >
+            <f:facet name="header">
+                TITULO ACADEMICO 
+            </f:facet>
+            <p:panelGrid columns="4" styleClass="ui-panelgrid-blank" columnClasses="colorLabel,,colorLabel" >
+                <p:outputLabel for="tituloObt" value="Título:"/>
+                <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                    <p:inputText id="tituloObt" value="#{lectorInfoFinalBean.prinTitulo.titulo}" autocomplete="off" style="width:700px;text-transform: uppercase"
+                                 required="true" requiredMessage="Título obtenido obligatorio" styleClass="campoNoEditado"  onfocus="this.setSelectionRange(0, this.value.length)">
+                        <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                    </p:inputText>
+                    <p:message for="tituloObt" display="icon" />                                   
+                </h:panelGrid>  
+                <p:outputLabel for="selectOneMenuNiv" value="Nivel:"/>
+                <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                    <p:selectOneMenu id="selectOneMenuNiv" required="true" requiredMessage="Nivel del título obtenido obligatorio" style="width:125px;"
+                                     value="#{lectorInfoFinalBean.prinTitulo.titNivelAcad}" styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItem itemLabel="ESPECIALIZACIÓN" itemValue="ESPECIALIZACIÓN" />
+                        <f:selectItem itemLabel="DOCTORADO" itemValue="DOCTORADO" />
+                        <f:selectItem itemLabel="MAESTRIA" itemValue="MAESTRIA" />
+                        <f:selectItem itemLabel="PREGRADO" itemValue="PREGRADO" />
+                        <p:ajax  event="change"  process="@this"/>
+                    </p:selectOneMenu>                                
+                    <p:message for="selectOneMenuNiv" display="icon" />   
+                </h:panelGrid>
+            </p:panelGrid>
+            <p:panelGrid columns="4" styleClass="ui-panelgrid-blank" columnClasses="colorLabel,,colorLabel" >
+                <p:outputLabel for="selectOneMenuUniv" value="Universidad:"/>
+                <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                    <p:selectOneMenu id="selectOneMenuUniv" required="true" requiredMessage="Universidad donde obtuvo el título obligatorio" style="width:575px;"
+                                     value="#{lectorInfoFinalBean.prinTitulo.prinEntidad}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarUniv" converter="entidadConverter">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{lectorInfoFinalBean.listaUniversidades}" var="univ" itemValue="#{univ}" itemLabel="#{univ.entNombre}"/>
+                        <p:ajax  event="change"  process="@this"/>
+                    </p:selectOneMenu>                                
+                    <p:message for="selectOneMenuUniv" display="icon" />   
+                </h:panelGrid>
+                <p:outputLabel value="País:" for="selectOneMenuPaisTit"/>
+                <h:panelGrid columns="2" cellpadding="2" cellspacing="0">
+                    <p:selectOneMenu id="selectOneMenuPaisTit" required="true" requiredMessage="Pais donde obtuvo el título obligatorio" style="width: 300px;"
+                                     value="#{lectorInfoFinalBean.prinTitulo.prinPais}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarPaiTit" converter="paisConverter">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{lectorInfoFinalBean.listaPais}" var="paisTit" itemValue="#{paisTit}" itemLabel="#{paisTit.paiNombre}"/>
+                    </p:selectOneMenu>                                
+                    <p:message for="selectOneMenuPaisTit" display="icon" />   
+                </h:panelGrid>
+            </p:panelGrid>
+
+        </p:panelGrid>
+    </p:panelGrid>
+
+</ui:composition>

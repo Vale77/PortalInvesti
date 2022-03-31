@@ -1,0 +1,137 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style type="text/css">
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;}
+        .colorCol{color: darkblue;font-size: 11px;}
+        .colAncho500{width: 500px}
+        .colAncho200{width: 200px}
+        .col1HdTabla1{text-align: left;width: 80%;}
+        .col2HdTabla1{text-align: right;width: 10%}
+        body.layout-compact .commandButtonAdd{height: 24px;font-size: 12px;}
+        body.layout-compact .ui-datatable-Prog thead tr th{padding: 3px;}
+        body.layout-compact .ui-datatable-Prog thead tr td{padding: 3px 5px;}
+        body.layout-compact .ui-datatable-Prog .ui-datatable-header{padding: 0px;}
+        body.layout-compact .ui-datatable-Prog thead th{padding: 3px 10px;}
+        .ui-panelgrid-CabProg .ui-panelgrid-cell{padding: 3px 5px;background-color: #e8e1e1;border: none !important}
+        body.layout-compact .ui-panelGridCarta .ui-panel-content{padding: 0px;}
+        body.layout-compact .ui-selectonemenu-panelLinea{ width: 875px !important;}
+        body.layout-compact .ui-selectonemenu-panelLinea .ui-selectonemenu-table{font-size: 11px;}
+        body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue;font-size: 12px;}
+    </style>
+    <p:focus context="pnlGrid" />
+    <p:panelGrid  columns="1" columnClasses="colorLabel,colorCol" styleClass="ui-panelgrid-blankForm form-group" 
+                  rendered="#{cartaBean.cartaEdit.carFechaRecep ne null}">
+        <p:outputLabel value="ATENCION!  La carta de pertinencia ya ha sido generada el #{cartaBean.formatDate(cartaBean.cartaEdit.carFechaPertinencia)}. ............ Ya no es editable"
+                       styleClass="colorLabel"  style="color:red;text-transform: uppercase" />        
+    </p:panelGrid>
+    <p:panelGrid  columns="2"  styleClass="ui-panelgrid-blankForm form-group"  style="width: 100%">
+        <f:facet name="header">
+            DATOS DE LA INVESTIGACIÓN
+        </f:facet>
+        <p:panelGrid  columns="2" columnClasses="colorLabel colAncho200,colorCol"  style="width: 100%">
+            <p:outputLabel value="Título:"/>
+            <p:outputLabel value="#{cartaBean.cartaEdit.inveProyecto.pryTitulo}" style="text-transform: uppercase"/>
+            <p:outputLabel value="Nombre del investigador:" />
+            <p:outputLabel value="#{cartaBean.cartaEdit.inveProyecto.prinPersona.perNombres} #{cartaBean.cartaEdit.inveProyecto.prinPersona.perPrimerApellido} #{cartaBean.cartaEdit.inveProyecto.prinPersona.perSegundoApellido}" />
+            <p:outputLabel value="Categoría:" />
+            <p:outputLabel value="#{cartaBean.cartaEdit.inveProyecto.prinCategoriaInvest.caiDescripcion}" style="text-transform: uppercase;color: brown"/>
+        </p:panelGrid>
+        <!--p:commandButton value="Ver Proyecto" styleClass="GreenButton commandButtonAdd" icon="ui-icon-document" 
+                         oncomplete="PF('viewWidget').show();" immediate="true" partialSubmit="true" update="viewDialog"/-->
+    </p:panelGrid>
+    <p:panelGrid id="pnlGrid" columns="2" columnClasses="colorLabel,colorCol" styleClass="ui-panelgrid-blankForm form-group" >
+        <f:facet name="header">
+            VALORACIÓN DE PERTINENCIA
+        </f:facet>
+        <p:outputLabel value="Programa(s) vinculado(s):" />
+        <p:dataTable id="dataTableProgVincu" var="prg" value="#{cartaBean.listaProgVincul}"  scrollable="true" scrollHeight="100"
+                     disabledSelection="#{cartaBean.cartaEdit.carFechaRecep ne null}"
+                     selectionMode="single" selection="#{cartaBean.programaProyectoSelected}" styleClass="ui-dataTable-carta ui-datatable-Prog" 
+                     rowKey="#{prg.inveProgramaProyectoPK}" rowIndexVar="ordinal" emptyMessage="Programas de Posgrado al que se vincula el proyecto"
+                     widgetVar="widgetVardataTableProgVincu">
+            <f:facet name="header">
+                <p:panelGrid  columns="2"  columnClasses="col1HdTabla1 colorLabel colorCol,col2HdTabla1" styleClass="ui-panelgrid-CabProg"
+                              rendered="#{cartaBean.cartaEdit.carFechaRecep eq null}">
+                    PROGRAMAS DE POSGRADO VINCULADOS
+                    <p:commandButton id="commandButtonProg" value="Añadir" styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" 
+                                     oncomplete="PF('dlgEditAdic').show();" immediate="true" partialSubmit="true" update="dlgEditAdic"
+                                     actionListener="#{cartaBean.processAddButton}"/>
+                </p:panelGrid>
+            </f:facet>
+            <p:ajax event="rowSelect" process="@this" update="@this"/>
+            <p:ajax event="rowUnselect" process="@this" update="@this" listener="#{cartaBean.onRowUnselect}"/>
+            <p:column headerText="N°" width="5%" style="text-align: center">
+                <h:outputText value="#{ordinal+1}" />                                                
+            </p:column>                   
+            <p:column headerText="Nombre"  width="90%">
+                <h:outputText value="#{prg.programa.nombrePrograma}" />
+            </p:column>
+            <p:column width="5%" style="text-align: center">
+                <p:commandButton  id="commandButtonDelProg" icon="ui-icon-delete" title="Eliminar Registro" immediate="true"
+                                  actionListener="#{cartaBean.processDelButton}"  partialSubmit="true" 
+                                  rendered="#{cartaBean.programaProyectoSelected.inveProgramaProyectoPK eq prg.inveProgramaProyectoPK}"/>
+            </p:column>
+        </p:dataTable>  
+        <p:outputLabel for="selectOneMenuLineaInv" value="Línea de investigación:" styleClass="colorLabel" />
+        <h:panelGrid columns="3" >
+            <p:selectOneMenu id="selectOneMenuLineaInv" value="#{cartaBean.lipCodigo}" styleClass="ui-selectonemenuUASB" style="width: 800px;"
+                             required="true" requiredMessage="Línea de investigación requerida" panelStyleClass="ui-selectonemenu-panelLinea"
+                             disabled="#{cartaBean.cartaEdit.carFechaRecep ne null}">
+                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                <f:selectItems value="#{cartaBean.listaLineaInvestProyec}" var="linea" itemValue="#{linea.lipCodigo}" itemLabel="#{linea.lipNombre}"/>  
+            </p:selectOneMenu> 
+            <p:message for="selectOneMenuLineaInv" display="icon" />
+            <p:commandButton id="commandButtonAddLinea"  styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" 
+                             oncomplete="PF('dlgEditAdic').show();" immediate="true" partialSubmit="true" update="dlgEditAdic"
+                             actionListener="#{cartaBean.processAddButton}"  rendered="#{cartaBean.cartaEdit.carFechaRecep eq null}"/>
+        </h:panelGrid>
+    </p:panelGrid>
+    <p:panel id="pnlGridCarta" styleClass="ui-panelGridCarta">
+        <p:panelGrid columns="2" columnClasses="colorLabel colAncho500" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+            <p:outputLabel for="selectOneMenuEs" value="Señale si el proyecto de investigación presentado es pertinente" />
+            <h:panelGrid columns="2">
+                <p:selectOneRadio id="selectOneMenuEs" value="#{cartaBean.cartaEdit.carEsPertinente}" style="color:blue"
+                                  required="true" requiredMessage="Indicativo de pertinencia es requerido" disabled="#{cartaBean.cartaEdit.carFechaRecep ne null}">
+                    <f:selectItem itemLabel="Si" itemValue="S" />
+                    <f:selectItem itemLabel="No" itemValue="N" />
+                </p:selectOneRadio>   
+                <p:message for="selectOneMenuEs" display="icon" />
+            </h:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid  columns="2" columnClasses="colorLabel" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group" >
+            <p:outputLabel for="razon" value="Cuáles son las razones que explican esta pertinencia:" styleClass="colorLabel" />
+            <p:panelGrid columns="1">
+                <p:scrollPanel mode="native" style="width:100%;height:120px">
+                    <p:panelGrid columns="2" >
+                        <p:inputTextarea id="razon" rows="6" cols="90" value="#{cartaBean.cartaEdit.carRazonPertinencia}" style="color: #2196F3;width: 100%;" 
+                                         required="false" requiredMessage="Razones de pertinencia requeridas" onfocus="this.setSelectionRange(0, this.value.length)"
+                                         disabled="#{cartaBean.cartaEdit.carFechaRecep ne null}" styleClass="campoNoEditado"
+                                         counter="displayTextTitulo" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="105">
+                            <p:ajax event="change"/>
+                            <!--f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/-->
+                            <p:watermark for="razon" value="1.       2.       3.   " id="watermarkRazon" />
+                        </p:inputTextarea>
+                        <p:message for="razon" display="icon" />    
+                    </p:panelGrid>
+                </p:scrollPanel>
+                <h:outputText id="displayTextTitulo" style="color: brown;font-size: 12px;font-weight: bold;visibility: #{cartaBean.cartaEdit.carEsPertinente ne null ? 'hidden':'visible'}"/>
+            </p:panelGrid>
+        </p:panelGrid>
+        <p:panelGrid  columns="2" columnClasses="colorLabel" styleClass="ui-panelgrid-blank ui-panelgrid-blankForm form-group" >
+            <p:outputLabel for="fechaPertinencia" value="Fecha de Pertinencia:"/>
+            <h:panelGrid columns="2" >
+                <p:calendar id="fechaPertinencia" value="#{cartaBean.cartaEdit.carFechaPertinencia}"  navigator="true"  styleClass="calendario " inputStyleClass="campoNoEditado"
+                            pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                            required="true" requiredMessage="Fecha de Pertinencia" disabled="#{cartaBean.cartaEdit.carFechaRecep ne null}">
+                    <p:ajax event="dateSelect"/>            
+                </p:calendar>
+                <p:message for="fechaPertinencia" display="icon" />
+            </h:panelGrid>
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

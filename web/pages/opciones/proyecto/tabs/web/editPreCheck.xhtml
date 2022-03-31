@@ -1,0 +1,60 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        body.layout-compact .ui-panelVerfif .ui-panel-titlebar{padding: 3px 10px;background-color:teal;font-size: 11px;}
+        body.layout-compact .ui-panelVerfif .ui-panel-content{padding: 3px 10px;}   
+        body.layout-compact .ui-selectmanycheckbox .ui-selectmanycheckbox-item-group{font-size: 11px;}
+        .ui-selectmanycheckbox .ui-selectmanycheckbox-responsive-group{padding: 0.1em 0.1em 0.1em 0}
+        .ui-md-1, .ui-md-2, .ui-md-3, .ui-md-4, .ui-md-5, .ui-md-6, .ui-md-7, .ui-md-8, .ui-md-9, .ui-md-10, .ui-md-11, .ui-md-12{padding:0.1em}
+        body.layout-compact .ui-dialog .ui-confirm-dialog-severity {color:red;margin: 4px 12px;font-size:25px;}
+    </style>
+    <p:panel styleClass="panelTab" style="width: 50%;">
+        <p:panelGrid id="pnlTipoProy" columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho150 colorLabel">
+            <p:outputLabel for="selectOneMenuTipoProy" value="Tipo de proyecto:" />
+            <p:selectOneMenu id="selectOneMenuTipoProy" value="#{forma.inveProyectoEdit.inveTipoProyecto}" styleClass="ui-selectonemenuUASB campoNoEditado" 
+                             converter="tipoProyConverter" disabled="true" style="text-transform: uppercase">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}"/>
+                <f:selectItems value="#{forma.listaTipoProy}" var="tp" itemLabel="#{tp.tipNombre}" itemValue="#{tp}" />
+            </p:selectOneMenu> 
+            <p:outputLabel for="selectOneMenuProyAdjunto" value="Coordinador:" styleClass="colorLabel" />
+            <p:outputLabel value="&lt;--- EN TIPO #{forma.inveProyectoEdit.inveTipoProyecto.tipNombre} NO APLICA" 
+                           style="color: brown; text-transform: uppercase; font-size: 12px;" styleClass="colorLabel" 
+                           rendered="#{forma.inveProyectoEdit.inveTipoProyecto ne null and forma.inveProyectoEdit.inveTipoProyecto.tipCodigo ne 2}"/>
+            <p:selectOneMenu id="selectOneMenuProyAdjunto" value="#{forma.inveProyectoEdit.inveProyecto}" styleClass="ui-selectonemenuUASB campoNoEditado" 
+                             converter="proyectoConverter" style="width: 600px;" rendered="#{forma.inveProyectoEdit.inveTipoProyecto.tipCodigo eq 2}" disabled="true">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{forma.listaProyAdjunto}" var="pry" 
+                               itemLabel="#{pry.prinPersona.perNombres} #{pry.prinPersona.perPrimerApellido} - #{pry.pryTitulo}" itemValue="#{pry}" />
+            </p:selectOneMenu> 
+        </p:panelGrid>      
+        <p:separator/>
+        <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" columnClasses="colAncho150 colorLabel">
+            <p:outputLabel  value="Proy. ingresado por:" />
+            <p:outputLabel value="#{forma.inveProyectoEdit.pryOrigenIngreso eq 'I' ? 'FORMULARIO':'SISTEMA'}" styleClass="colorLabel" style="color:brown;font-size: 12px;"/>  
+            <p:outputLabel for="selectOneMenuEstado" value="Estado de proyecto:" />
+            <p:selectOneMenu id="selectOneMenuEstado" value="#{forma.inveProyectoEdit.pryEstadoReg}" styleClass="ui-selectonemenuUASB" disabled="true">
+                <f:selectItem itemLabel="INGRESADO" itemValue="I" />
+                <f:selectItem itemLabel="ENVIADO" itemValue="E"/>
+                <f:selectItem itemLabel="REGISTRADO EN COMITE" itemValue="R"/>
+                <f:selectItem itemLabel="ACEPTADO - pendiente de carta de pertinencia" itemValue="A"/>
+                <f:selectItem itemLabel="RECHAZADO" itemValue="X"/>
+            </p:selectOneMenu> 
+            <p:outputLabel value="Código del proyecto:" styleClass="colorLabel"/>
+            <p:outputLabel value="#{forma.codigoCI}" style="width:50px;text-transform: uppercase;color: brown"/>
+        </p:panelGrid>  
+        <div align="right">
+            <p:commandButton value="Ver Documento" icon="ui-icon-print" update=":pdfDialog" oncomplete="PF('pdfWidget').show();"
+                        actionListener="#{forma.print()}" partialSubmit="true" />
+             <p:spacer width="30"/>
+            <p:commandButton value="Enviar al comite" renderDisabledClick="true" disabled="#{forma.inveProyectoEdit.pryEstadoReg ne 'I'}"
+                             icon="ui-icon-email" partialSubmit="true" process="@form" update="@form" actionListener="#{forma.envioComite}">
+                <p:confirm header="Confirmación"  icon="ui-icon-warning" message="Esta toda la información correctamente ingresada y completa ? (Este envío es irreversible)"/>
+            </p:commandButton>            
+        </div>
+    </p:panel>
+</ui:composition>

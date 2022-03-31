@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{rubrosBean}"/>
+    </ui:define>
+
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{rubrosBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            body.layout-compact .ui-dataTable-rubro thead tr th{font-size: 13px;background-color: #e8e1e1;}
+            body.layout-compact .ui-dataTable-rubro tbody tr {font-size: 12px;}
+        </style>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Rubros para investigación</h3>
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:dataTable id="dataTableAmbito" var="rubro" value="#{rubrosBean.listaInveRubros}" selectionMode="single" reflow="true" 
+                             selection="#{rubrosBean.selectedRow}" rowKey="#{rubro.rubCodigo}" scrollable="true" scrollHeight="350" 
+                             styleClass="ui-dataTable-rubro" widgetVar="widgetDataTableRubro" sortBy="#{rubro.rubNombre}">
+                    <p:ajax event="rowSelect" listener="#{rubrosBean.onRowSelect}" update=":formMenuBar"/>
+                    <p:ajax event="rowUnselect" listener="#{rubrosBean.onRowUnselect}" update=":formMenuBar"/>
+                    <p:column headerText="Código" width="5%" style="text-align: center">
+                        <h:outputText value="#{rubro.rubCodigo}"  style="color: brown" styleClass="colorLabel"/>
+                    </p:column>
+                    <p:column headerText="Concepto" width="20%">
+                        <h:outputText value="#{rubro.rubNombre}"/>
+                    </p:column>
+                    <p:column headerText="Descripción" width="30%">
+                        <h:outputText value="#{rubro.rubDescripcion}"/>
+                    </p:column>  
+                    <p:column headerText="Monto" width="8%" style="text-align: center">
+                        <h:outputText value="$ #{rubro.rubMontoEc}"  style="color: blue" styleClass="colorLabel" rendered="#{rubro.rubMonto.intValue() ne 0}"/>
+                    </p:column>                         
+                    <p:column headerText="Grupo de enfoque" width="37%">
+                        <h:outputText value="#{rubro.grupos}" escape="false"/>
+                    </p:column>                           
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+
+
+</ui:composition>

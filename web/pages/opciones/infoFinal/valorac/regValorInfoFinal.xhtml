@@ -1,0 +1,108 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <style type="text/css">
+        body.layout-compact .ui-selectonemenuReco .ui-selectonemenu-label{font-weight: bold;color: brown} 
+        .ui-panelgrid-blankForm.form-group .ui-panelgrid-cell{padding: 3px 5px;}
+        .ui-panelgrid-blankLec.form-group .ui-panelgrid-cell{padding: 0px 5px;}
+        .colorCol{color: darkblue;font-size: 11px;}
+        .colAncho200{width: 200px;}
+        .colAncho125{width: 125px;}
+        body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue;font-size: 12px;}
+        body.layout-compact .calendario .ui-inputfield.ui-state-disabled{opacity: 1.0}
+        body.layout-compact .ui-fileupload .ui-fileupload-buttonbar{padding: 0px;background-color: transparent;border: none}
+        body.layout-compact .ui-fileupload .ui-fileupload-buttonbar .ui-button{font-size: 12px;}
+        .ui-fileupload-content{padding: 0px 0px;}
+        .ui-fileupload-messages{font-size: 11px;}
+        .ui-fileupload-files{margin: 0px 0px;}
+        body.layout-compact .ui-panelVerfif .ui-panel-titlebar{padding: 3px 10px;background-color:teal;font-size: 11px;}
+        body.layout-compact .ui-panelVerfif .ui-panel-content{padding: 3px 10px;}
+        body.layout-compact .ui-selectmanycheckbox .ui-selectmanycheckbox-item-group{font-size: 13px;}
+    </style>
+    <p:panelGrid  columns="2" columnClasses="colorLabel colAncho200,colorCol" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%">
+        <f:facet name="header">
+            DATOS DEL PROYECTO DE INVESTIGACIÓN
+        </f:facet>
+        <p:outputLabel value="Título:"/>
+        <p:outputLabel value="#{valorInfoFinalBean.inveLectorEdit.inveProyecto.pryCodigoCi} - #{valorInfoFinalBean.inveLectorEdit.inveProyecto.pryTitulo}" style="text-transform: uppercase"/>
+        <p:outputLabel value="Nombre del lector:" />
+        <p:outputLabel style="color:brown; font-weight: bold"
+                       value="#{valorInfoFinalBean.inveLectorEdit.prinPersona.perNombres} #{valorInfoFinalBean.inveLectorEdit.prinPersona.perPrimerApellido} #{valorInfoFinalBean.inveLectorEdit.prinPersona.perSegundoApellido}"/>
+    </p:panelGrid>
+    <p:panelGrid id="pnlGrid" columns="2" styleClass="ui-panelgrid-blankForm form-group" style="width: 100%;">
+        <f:facet name="header">
+            CONTENIDO DEL DOCUMENTO
+        </f:facet>        
+        <h:panelGrid columns="1" columnClasses="colorLabel" cellpadding="5"  cellspacing="0"  >
+            <p:outputLabel for="selectOneMenuEstado" value="Recomienda la aprobación de éste proyecto ?:"/>
+            <h:panelGrid columns="3" >
+                <p:selectOneMenu id="selectOneMenuEstado" value="#{valorInfoFinalBean.inveValoracionEdit.inveEstadoValoracion}" 
+                                 converter="estadoValConverter" var="tabla" style="width: 600px;" 
+                                 styleClass="ui-selectonemenuUASB ui-selectonemenuReco"  required="true" requiredMessage="Recomendación requerida" >
+                    <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{valorInfoFinalBean.listaEstados}" var="estado" itemValue="#{estado}" />
+                    <p:column >
+                        <h:outputText value="&lt;span style='color: green;font-weight: bold'&gt;#{tabla.esvEstado}&lt;/span&gt; - #{tabla.esvDescripcion}" escape="false"/>
+                    </p:column>
+                    <p:ajax update="formEdit:pnlGrid" listener="#{valorInfoFinalBean.resetFechas()}"/>
+                </p:selectOneMenu>
+                <p:message for="selectOneMenuEstado" display="icon" />
+            </h:panelGrid>
+            <h:panelGrid columns="3" >
+                <p:outputLabel for="fechaReco" value="Fecha de recomendación:"/>
+                <p:calendar id="fechaReco" value="#{valorInfoFinalBean.inveValoracionEdit.valFechaRecep}"  navigator="true"  styleClass="calendario"
+                            pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                            required="true" requiredMessage="Fecha de recomendación requerida" >
+                    <p:ajax event="dateSelect" />            
+                </p:calendar>
+                <p:message for="fechaReco" display="icon" />
+            </h:panelGrid>
+            <h:panelGrid columns="3" 
+                         rendered="#{valorInfoFinalBean.inveValoracionEdit.inveEstadoValoracion ne null and valorInfoFinalBean.inveValoracionEdit.inveEstadoValoracion.esvCodigo eq '1'}">
+                <p:outputLabel for="selectOneMenuPub" value="Recomienda la publicación ? :" />
+                <p:selectOneRadio id="selectOneMenuPub" value="#{valorInfoFinalBean.inveValoracionEdit.valRecomendaPublic}" 
+                                  
+                                  styleClass="ui-selectonemenuUASB"  required="true" requiredMessage="Recomienda la publicación ? SI o NO" >
+                    <f:selectItem itemLabel="SI" itemValue="S"/>
+                    <f:selectItem itemLabel="NO" itemValue="N"/>
+                </p:selectOneRadio>
+                <p:message for="selectOneMenuPub" display="icon" />
+            </h:panelGrid>
+            <!--h:panelGrid columns="3" 
+                         rendered="#{valorInfoFinalBean.inveValoracionEdit.inveEstadoValoracion ne null and valorInfoFinalBean.inveValoracionEdit.inveEstadoValoracion.esvCodigo eq '2'}">
+                <p:outputLabel  for="fechaFin"  value="Fecha de entrega:"/>
+                <p:calendar id="fechaFin" value="#{valorInfoFinalBean.inveSeguimiento.segFechaLimite}"  navigator="true"  styleClass="calendario"
+                            pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                            required="true" requiredMessage="Fecha de entrega requerida"  disabled="#{valorInfoFinalBean.inveSeguimiento.segCodigo gt 0}">
+                </p:calendar>
+                <p:message for="fechaFin" display="icon" />
+            </h:panelGrid-->
+
+            <!--p:outputLabel for="outputTextExtencion" value="Informe de Valoración:"/>
+            <h:panelGrid id="pnlArchivo" columns="2" style="width: 100%;">
+                <p:inputText id="outputTextArchivo" value="#{valorInfoFinalBean.doc.docNombre}" style="color: #2196F3;width: 100%;opacity: 1.0" disabled="true"/>
+                <p:message for="outputTextExtencion" display="icon"/>    
+            </h:panelGrid>
+            <p:fileUpload fileUploadListener="#{valorInfoFinalBean.subirAchivo}" mode="advanced" update="pnlArchivo outputTextExtencion"
+                          immediate="true" auto="true" 
+                          fileLimitMessage="Solo se permite 1 archivo a la vez" required="true" requiredMessage="Informe de valoración requerido" 
+                          allowTypes="/(\.|\/)(doc|docx)$/" sizeLimit="1048576"  invalidFileMessage="Archivo no valido" 
+                          label="Seleccionar informe" dragDropSupport="false" cancelLabel="Cancelar" uploadLabel="Cargar"
+                          invalidSizeMessage="Tamaño no permitido del archivo:&lt;/br&gt;" />
+            <p:inputText  id="outputTextExtencion" value="#{valorInfoFinalBean.doc.docNombre}"
+                          style="visibility: hidden;height: 0px;" required="true" requiredMessage="Informe de Valoración requerido"/>
+            <p:outputLabel value="NOTA: No olvide verificar que la estructura del Informe de Valoración sea la solicitada y marque las casillas respectivas" style="color:brown"/-->
+        </h:panelGrid>
+        <p:panel header="VERIFICACIONES" styleClass="ui-panelVerfif" >
+            <p:selectManyCheckbox  value="#{valorInfoFinalBean.selectedItemsEsquema}" layout="responsive" columns="1" style="width: 275px;"
+                                   required="true" requiredMessage="Verificaciones de Datos y Análisis del proyecto obligatorias">
+                <f:selectItems value="#{valorInfoFinalBean.esquema}" var="itemEsquema" itemLabel="#{itemEsquema}" itemValue="#{itemEsquema}" />
+            </p:selectManyCheckbox>
+        </p:panel>
+    </p:panelGrid>
+
+</ui:composition>

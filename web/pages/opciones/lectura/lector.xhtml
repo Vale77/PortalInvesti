@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{lectorBean}"/>
+    </ui:define>
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{lectorBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            .campoNoEditado.ui-state-disabled {font-weight: bold;background-color: #dbdbdb;opacity: 1.0;color: black}
+            body.layout-compact .ui-button.ui-button-icon-only{width: 24px;height: 24px}
+            body.layout-compact .ui-selectonemenuUASB .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            body.layout-compact .ui-selectonemenuUASB.ui-state-disabled {opacity: 1.0;} 
+            body.layout-compact .ui-dataTable-Lec tbody tr {font-size: 11px;}
+            body.layout-compact .ui-dataTable-Lec thead tr th{font-size: 12px;background-color: #e8e1e1;padding: 3px 5px;}
+            body.layout-compact .ui-dataTable-Lec .ui-datatable-header{padding: 3px 5px;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;font-size: 14px}
+            body .ui-datatable tbody tr.ui-datatable-odd.ui-state-highlight{background-color: #f3ae08;} 
+            .ui-panelgridSeleccion{font-size: 12px}
+            .ui-panelgridSeleccion.form-group .ui-panelgrid-cell{padding: 5px 5px;}
+
+            .colAncho40{width: 40px}
+            .colAncho300{width: 300px}
+            body.layout-compact .ui-column-filter.ui-inputfield{width: 95% !important;font-size: 11px;text-transform: uppercase}
+        </style>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Asignación de lector de proyecto</h3>
+        <!--h:form>
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgridSeleccion form-group">
+                    <p:outputLabel for="selectOneMenuAnio" value="Año académico:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuAnio" value="#{lectorBean.anio}" tabindex="2"  styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{lectorBean.listaAnios}" var="anio" itemValue="#{anio.anio}" itemLabel="#{anio.nombreCiclo}"/>
+                        <p:ajax  update="@form,form,formMenuBar" listener="#{lectorBean.retrieveBy}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+            </div>
+        </h:form-->
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                    <p:outputLabel for="selectOneMenuConvo" value="Convocatoria:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuConvo" value="#{lectorBean.convocatoria}" tabindex="110"  styleClass="ui-selectonemenuUASB" 
+                                     converter="convocatoriaConverter" var="tabla" >
+                        <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{lectorBean.listaConvocatorias}" var="convo" itemValue="#{convo}" itemDescription="#{''.concat(convo.cvoCodigo)}"
+                                       itemLabel="#{convo.inveTipoConvocatoria.tcvNombre}: #{lectorBean.formatDate(convo.cvoFechaInicio)}  -  #{lectorBean.formatDate(convo.cvoFechaFin)}  ----&gt; #{convo.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}"/>
+                        <p:column headerText="Tipo" width="10%">
+                            <h:outputText value="#{tabla.inveTipoConvocatoria.tcvNombre}"/>
+                        </p:column>
+                        <p:column headerText="Inicio" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{tabla.cvoFechaInicio ne null}">
+                                <f:param value="#{tabla.cvoFechaInicio}"/>
+                            </h:outputFormat>         
+                        </p:column>         
+                        <p:column headerText="Final" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{tabla.cvoFechaFin ne null}">
+                                <f:param value="#{tabla.cvoFechaFin}"/>
+                            </h:outputFormat>                      
+                        </p:column>  
+                        <p:column headerText="Estado" width="10%">
+                            <h:outputText value="#{tabla.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}" styleClass="colorLabel"
+                                          style="color:#{tabla.cvoEstado eq 'A' ? 'green':'red'};"/>
+                        </p:column>                        
+                        <p:ajax update="@form,formLector,formMenuBar" listener="#{lectorBean.retrieveBy}" resetValues="true"
+                                />
+                    </p:selectOneMenu>                
+                </p:panelGrid>
+            </div>
+        </h:form>
+        <h:form id="formLector">
+            <p:remoteCommand name="deSeleccionar" ignoreAutoUpdate="true" partialSubmit="true" oncomplete="PF('widgetLector').unselectAllRows();" 
+                             action="#{lectorBean.resetFilter()}"/>
+            <p:dataTable id="dataTableLector" var="carta" value="#{lectorBean.listaCartas}" selectionMode="single" reflow="true" 
+                         selection="#{lectorBean.cartaSelected}" rowKey="#{carta.pryCodigo}"  styleClass="ui-dataTable-Lec"  sortBy="#{carta.inveProyecto.pryCodigoCi}"
+                         widgetVar="widgetLector" scrollable="true" scrollHeight="350" rowIndexVar="fila" filteredValue="#{lectorBean.filteredCartas}"
+                         emptyMessage="#{lectorBean.anio eq null ? 'Seleccione la convocatoria' : lectorBean.listaCartas.size() == 0 ?'No existen cartas registradas':''}">
+                <f:facet name="header">
+                    CARTAS DE PERTINENCIA POSITIVAS
+                </f:facet>
+                <p:ajax event="rowSelect" process="@this" update="@this" listener="#{lectorBean.onRowSelect}"/>
+                <p:ajax event="rowUnselect" process="@this" update="@this" listener="#{lectorBean.onRowUnselect}"/>
+                <p:ajax event="filter"  onsuccess="deSeleccionar();"/> 
+                <p:column headerText="Ord." width="3%" style="text-align: center">
+                    <h:outputText value="#{fila+1}"/>
+                </p:column> 
+                <p:column headerText="Área" width="13%" filterBy="#{carta.area.areaNombre}" sortBy="#{carta.area.areaNombre}" filterMatchMode="contains">
+                    <h:outputText value="#{carta.area.areaNombre.substring(7)}" style="font-size: 11px; " />
+                </p:column>  
+                <p:column headerText="Código" width="4%" style="text-align: center" filterBy="#{carta.inveProyecto.pryCodigoCi}" sortBy="#{carta.inveProyecto.pryCodigoCi}">
+                    <h:outputText value="#{carta.inveProyecto.pryCodigoCi}"/>
+                </p:column> 
+                <p:column headerText="Título" width="40%" filterBy="#{carta.inveProyecto.pryTitulo}" sortBy="#{carta.inveProyecto.pryTitulo}">
+                    <h:outputText value="#{carta.inveProyecto.pryTitulo}" style="text-transform: uppercase" title="#{carta.inveProyecto.pryCodigo}"/>
+                </p:column>                 
+                <p:column headerText="Lector" width="15%" filterBy="#{carta.lector.prinPersona.perPrimerApellido} #{carta.lector.prinPersona.perSegundoApellido}" 
+                          sortBy="#{carta.lector.prinPersona.perPrimerApellido} #{carta.lector.prinPersona.perSegundoApellido}">
+                    <h:outputFormat value="#{carta.lector.lecCodigo le '-1' ? '{0}':'{1}'}" styleClass="#{carta.lector.lecCodigo le '-1' ? '':'colorLabel'}"
+                                    style="text-transform: uppercase;font-size: 11px;color:#{carta.lector.lecCodigo le '-1' ? 'red' : carta.lector.lecAceptacion eq null ?'blue':'green'}">
+                        <f:param value="No asignado"/>
+                        <f:param value="#{carta.lector.prinPersona.perPrimerApellido} #{carta.lector.prinPersona.perSegundoApellido} #{carta.lector.prinPersona.perNombres}"/>
+                    </h:outputFormat>
+                </p:column>   
+                <p:column headerText="Lectura" width="4%" style="text-align: center">
+                    <h:outputText value="#{carta.lector.lecNumero}" styleClass="colorLabel"
+                                  style="text-transform: uppercase;color: #{carta.seguimiento.segFechaLimite ge currentDate ? 'green':'red'}" />
+                </p:column>
+                <p:column headerText="Fecha Designación" width="7%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}"  style="color:blue;text-transform: uppercase"
+                                    styleClass="colorLabel" rendered="#{carta.lector.lecCodigo gt '-1' and carta.lector.lecFechaAceptacion ne null}">
+                        <f:param value="#{carta.lector.lecFechaDesignacion}"/>
+                    </h:outputFormat>         
+                </p:column>   
+                <p:column headerText="Límite Aceptación" width="7%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}"  styleClass="colorLabel"  
+                                    style="text-transform: uppercase;color:#{ carta.lector.lecAceptacion eq null ? 'red':'green'}"
+                                    rendered="#{carta.lector.lecCodigo gt '-1' and carta.lector.lecFechaAceptacion ne null}">
+                        <f:param value="#{carta.lector.lecFechaLimiteAcep}"/>
+                    </h:outputFormat>     
+                </p:column>                    
+                <p:column headerText="Límite Informe" width="7%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel"  
+                                    style="text-transform: uppercase;color: #{carta.seguimiento.segFechaLimite ge currentDate ? 'green':'red'}" 
+                                    rendered="#{carta.lector.lecCodigo gt '-1' and carta.seguimiento.segCodigo gt -1}">
+                        <f:param value="#{carta.seguimiento.segFechaLimite}"/>
+                    </h:outputFormat>         
+                </p:column>                 
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

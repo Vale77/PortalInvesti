@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../WEB-INF/template.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;}
+            body.layout-compact .ui-pdfPanel .ui-panel-content{padding: 3px 3px;background-color: beige}
+            body.layout-compact .commandButtonAdd{height: 24px;font-size: 12px;}
+            body.layout-compact .ui-selectOneListboxReps{line-height: 10px;}
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item{font-size: 12px;}
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item.ui-state-highlight{font-size: 14px;font-weight: bold;font-style: italic}   
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item.ui-state-disabled{font-weight: bold;color: blue; opacity: 1.0;padding-left: 5px; }
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item {padding: 6px 15px;}
+            body.layout-compact .ui-dataTable-perso thead tr th{font-size: 12px;background-color: #e8e1e1;}
+            body.layout-compact .ui-dataTable-perso tbody tr {font-size: 10px;}
+            body.layout-compact .ui-column-filter.ui-inputfield{width: 98% !important;font-size: 11px;text-transform: uppercase}
+        </style>
+    </ui:define>    
+    <ui:define name="content">
+        <p:layout style="min-height:500px; height: 550px">
+            <p:layoutUnit position="west" size="385">
+                <h:form id="formOpc1">
+                    <h:panelGrid  columns="1" >
+                        <h:panelGrid columns="2" >
+                            <p:outputLabel value="Documentos:" styleClass="colorLabel" />
+                            <p:outputLabel value="   (*Seleccione un documento)" style="font-size: 9px; color: brown"/>
+                        </h:panelGrid>
+                        <p:selectOneListbox id="selectOneMenuTip" value="#{documentosBean.reporte}" style="width: 360px" scrollHeight="100" 
+                                            styleClass="ui-selectOneListboxReps" >
+                            <f:selectItems value="#{documentosBean.listaReportes}" var="rep" itemLabel="#{rep.label}" itemValue="#{rep.value}" />
+                            <p:ajax update="formBuscar:commandButtonBuscar formOpc:pnlCondiciones" listener="#{documentosBean.resetFiltro()}" resetValues="true" 
+                                    oncomplete="deSeleccionar();PF('widgetDataTableInvest').clearFilters();" />
+                        </p:selectOneListbox>
+                    </h:panelGrid>
+                </h:form>
+                <h:form id="formOpc">
+                    <p:remoteCommand name="deSeleccionar" ignoreAutoUpdate="true" partialSubmit="true"  update="formBuscar:commandButtonBuscar"
+                                     oncomplete="PF('widgetDataTableInvest').unselectAllRows();"   action="#{documentosBean.resetFiltro()}"/>
+                    <h:panelGrid id="pnlCondiciones" columns="1" >
+                        <h:panelGrid columns="2" >
+                            <p:outputLabel  value="#{documentosBean.reporte eq 'kardexProyectos' ? 'Proyectos':'Investigador/Lector:'}" styleClass="colorLabel" style="font-size: 12px"/>
+                            <p:outputLabel value="   (*Seleccione uno...)" style="font-size: 9px; color: brown"/>
+                        </h:panelGrid>
+                        <p:dataTable id="dataTableInvest" var="perso" value="#{documentosBean.listaPersonas}" selectionMode="single"
+                                     scrollRows="10" scrollable="true" liveScroll="true" scrollHeight="280"  reflow="true"  rendered="#{documentosBean.reporte ne 'kardexProyectos'}"
+                                     selection="#{documentosBean.selectedRow}" rowKey="#{perso.perCodigo}"  emptyMessage="No existen personas en roles de investigación o lectura"
+                                     styleClass="ui-dataTable-perso" widgetVar="widgetDataTableInvest">
+                            <p:ajax event="rowSelect" listener="#{documentosBean.onRowSelect}" update="formBuscar:commandButtonBuscar"/>
+                            <p:ajax event="rowUnselect" listener="#{documentosBean.onRowUnselect}" update="formBuscar:commandButtonBuscar"/>
+                            <p:ajax event="filter"  onsuccess="deSeleccionar();" />
+                            <p:column headerText="Identif." width="20%" >
+                                <h:outputText value="#{perso.perIdDoc}" style="color: brown;font-weight: bold"/>
+                            </p:column>
+                            <p:column headerText="Nombre" width="80%" filterBy="#{perso.perPrimerApellido}">
+                                <h:outputText value="#{perso.perPrimerApellido} #{perso.perSegundoApellido} #{perso.perNombres}" style="text-transform: uppercase" title="#{perso.perCodigo}"/>
+                            </p:column>
+                        </p:dataTable>
+                        <p:dataTable id="dataTablePry" var="proyecto" value="#{documentosBean.listaProyectos}" selectionMode="single"
+                                     scrollRows="10" scrollable="true" liveScroll="true" scrollHeight="280"  reflow="true" sortBy="#{proyecto.pryCodigoCi}"
+                                     selection="#{documentosBean.selectedRow}" rowKey="#{proyecto.pryCodigo}" emptyMessage="No existen proyectos registrados"
+                                     rendered="#{documentosBean.reporte eq 'kardexProyectos'}"
+                                     styleClass="ui-dataTable-perso" widgetVar="widgetDataTableInvest">
+                            <p:ajax event="rowSelect" listener="#{documentosBean.onRowSelect}" update="formBuscar:commandButtonBuscar"/>
+                            <p:ajax event="rowUnselect" listener="#{documentosBean.onRowUnselect}" update="formBuscar:commandButtonBuscar"/>
+                            <p:ajax event="filter"  onsuccess="deSeleccionar();" />
+                            <p:column headerText="Código" width="20%" filterBy="#{proyecto.pryCodigoCi}">
+                                <h:outputText value="#{proyecto.pryCodigoCi}" style="color: brown;font-weight: bold"/>
+                            </p:column>
+                            <p:column headerText="Título" width="80%" filterMatchMode="contains"
+                                      filterBy="#{proyecto.pryTituloFinal eq null ? proyecto.pryTitulo : proyecto.pryTituloFinal}">
+                                <h:outputText value="#{proyecto.pryTituloFinal eq null ? proyecto.pryTitulo : proyecto.pryTituloFinal}"  title="#{proyecto.pryCodigo}"
+                                              style="text-transform: uppercase"/>
+                            </p:column>
+                        </p:dataTable>                        
+
+                    </h:panelGrid>
+                </h:form>
+                <h:form id="formBuscar">
+                                            <p:commandButton id="commandButtonBuscar" value="Buscar" title="Generar reporte" styleClass="GreenButton commandButtonAdd" icon="ui-icon-search"
+                                         disabled="#{documentosBean.reporte eq null or documentosBean.selectedRow eq null}" update="@form"
+                                         partialSubmit="true" action="#{documentosBean.search()}" onstart="PF('statusReporte').show();"/>     
+                </h:form>
+            </p:layoutUnit>
+            <p:layoutUnit position="center" size="455">
+                <p:panel id="pdfPanel" visible="#{documentosBean.repEmbebVisible}" styleClass="ui-pdfPanel" style="height: 100%;width: 100%" >
+                    <p:media height="100%" width="100%" zoom="75" player="pdf"
+                             value="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}/ServletImpr/Print?#{sessionScope.urlRep}">
+                    </p:media>
+                </p:panel>
+                <p:dialog widgetVar="statusReporte" draggable="false" closable="false" showHeader="false" dynamic="true" 
+                          onHide="myStopFunction();" onShow="myFunction();"  resizable="false" >
+                    <h:panelGrid columns="2" >  
+                        <h:graphicImage library="images" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>  
+                        <h:outputText value="Por favor espere, esto puede tardar algunos minutos..." style="white-space: nowrap;"/>  
+                    </h:panelGrid>    
+                </p:dialog>
+            </p:layoutUnit>
+        </p:layout>
+
+        <script type="text/javascript" language="javascript">
+            var myVar;
+            function myFunction() {
+                myVar = setTimeout(function () {PF('statusReporte').hide()}, 3000);
+            }
+            function myStopFunction() {
+                clearTimeout(myVar);
+            }
+        </script>
+    </ui:define>
+</ui:composition>

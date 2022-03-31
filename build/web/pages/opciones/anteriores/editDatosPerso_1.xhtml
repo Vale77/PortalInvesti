@@ -1,0 +1,183 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">  
+    
+    <p:panelGrid id="pnlPerso" columns="2" styleClass="ui-panelgrid-blank ui-panelgridPreFrm form-group"  columnClasses="colAncho150 colorLabel," style="margin-bottom:5px">
+        <p:outputLabel for="selectOneMenuTipo" value="Tipo documento" />
+        <p:panelGrid  columns="4">
+            <p:selectOneMenu id="selectOneMenuTipo" value="#{forma.tipoDoc}" tabindex="5" widgetVar="widgetVarTipo"
+                             styleClass="ui-selectonemenuUASB campoNoEditado" required="true" requiredMessage="Tipo documento obligatorio"
+                             disabled="#{forma.persona.perCodigo ne null}">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItem itemLabel="CÉDULA" itemValue="C"/>
+                <f:selectItem itemLabel="PASAPORTE" itemValue="P" />
+                <p:ajax event="change"  update="outputLabelTipoDoc,inputTextNroDoc,messageTipo" immediate="true" partialSubmit="true" oncomplete="setfocoNroDoc();"/>
+            </p:selectOneMenu>
+            <p:message id="messageTipo" for="selectOneMenuTipo" style="font-size: 12px"/>
+            <p:outputLabel id="outputLabelTipoDoc" for="inputTextNroDoc"  styleClass="colorLabel"
+                           value="#{forma.tipoDoc eq null ? '': c.tipoDoc eq 'C' ? 'Cédula Nro:':'Pasaporte Nro:'}"/>
+            <p:panelGrid columns="2" >
+                <p:inputText id="inputTextNroDoc"  value="#{forma.nroDocumento}" required="true" requiredMessage="#{forma.tipoDoc eq 'C' ? 'Cédula Nro:':'Pasaporte Nro:'} obligatorio" 
+                             disabled="#{forma.tipoDoc eq null or forma.persona.perCodigo ne null}" tabindex="10"
+                             maxlength="#{forma.tipoDoc eq 'C'? 10:20}" autocomplete="off" styleClass="campoNoEditado" onfocus="this.setSelectionRange(0, this.value.length)"
+                             style="width:125px;text-transform: uppercase;">
+                    <p:ajax event="change" update="msgNroDoc" listener="#{forma.txt_NroDocValueChange()}" />
+                    <f:attribute name="tipoDocumento" value="#{forma.tipoDoc}"/>
+                    <f:validator validatorId="ec.edu.uasb.validator.CedulaValidator"/>
+                </p:inputText>
+                <p:message for="inputTextNroDoc" id="msgNroDoc" style="font-size: 12px"/>       
+            </p:panelGrid>
+        </p:panelGrid>
+        <p:outputLabel for="inputTextNombre" value="Nombres:" />
+        <p:panelGrid columns="2" >
+            <p:inputText id="inputTextNombre" required="true" requiredMessage="Nombres obligatori" styleClass="campoNoEditado"
+                         style="text-transform: uppercase;width:250px;"  autocomplete="off" tabindex="15"  onfocus="this.setSelectionRange(0, this.value.length)"
+                         disabled="#{forma.persona.perCodigo ne null}"  value="#{forma.persona.perNombres}">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputText>
+            <p:message for="inputTextNombre" display="icon" />                               
+        </p:panelGrid>
+        <p:outputLabel for="inputTextApellido1" value="Primer apellido:" />        
+        <p:panelGrid columns="5" >
+            <p:inputText id="inputTextApellido1" required="true" requiredMessage="Primer apellido obligatorio" styleClass="campoNoEditado"
+                         style="text-transform: uppercase;width:250px;" autocomplete="off" 
+                         disabled="#{forma.persona.perCodigo ne null}" 
+                         value="#{forma.persona.perPrimerApellido}" tabindex="20"  onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputText>
+            <p:message for="inputTextApellido1" display="icon" />  
+            <p:outputLabel for="inputTextApellido2" value="Segundo apellido:" styleClass="colorLabel"/> 
+            <p:inputText id="inputTextApellido2" style="text-transform: uppercase;width:250px;" autocomplete="off" styleClass="campoNoEditado" tabindex="25"
+                         value="#{forma.persona.perSegundoApellido}"
+                         disabled="#{forma.persona.perCodigo ne null and (forma.personaOrig.perSegundoApellido ne null and forma.personaOrig.perSegundoApellido.trim().length() ne 0) }" 
+                         required="true" requiredMessage="Segundo apellido obligatorio"  onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputText>
+            <p:message for="inputTextApellido2" display="icon" />     
+        </p:panelGrid>
+        <p:outputLabel  value="Correo:" for="inputTextMail"/>
+        <p:panelGrid columns="5" >
+            <p:inputText id="inputTextMail" value="#{forma.persona.perEmail}" autocomplete="off" styleClass="campoNoEditado"
+                         title="ejemplo: 'nombre@dominio.com', sólo un email principal " tabindex="30" style="text-transform: lowercase;width:300px;"
+                         onfocus="this.setSelectionRange(0, this.value.length)" required="true" requiredMessage="Correo obligatorio" >
+                <f:validator validatorId="ec.edu.uasb.validator.EmaiValidator"/>
+            </p:inputText>        
+            <p:message for="inputTextMail" display="icon"/>                                   
+            <p:outputLabel  value="Celular:" for="inputTextCelular"  styleClass="colorLabel"/>
+            <p:inputMask id="inputTextCelular" value="#{forma.persona.perCelular}" styleClass="campoNoEditado" tabindex="35"
+                         style="width:125px;text-align: center" required="true" requiredMessage="Celular obligatorio"
+                         mask="9999999999" autocomplete="off"/>
+            <p:message for="inputTextCelular" display="icon"/>         
+        </p:panelGrid>     
+        <p:outputLabel value="Nacionalidad:" for="selectOneMenuPaisNac"/>
+        <p:panelGrid columns="5" >
+            <p:selectOneMenu id="selectOneMenuPaisNac" required="true" requiredMessage="Nacionalidad obligatoria" tabindex="40"
+                             disabled="#{forma.persona.perCodigo ne null and forma.personaOrig.prinNacionalidad ne null}"
+                             value="#{forma.paiCodigoNac}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarNac">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{forma.listaPais}" var="paisDom" itemValue="#{paisDom.paiCodigo}" itemLabel="#{paisDom.paiNombre}" />
+                <p:ajax  event="change" process="@this" />
+            </p:selectOneMenu>                                
+            <p:message for="selectOneMenuPaisNac" display="icon" />  
+            <p:outputLabel value="Fecha de nacimiento:" for="fechaNac"  styleClass="colorLabel"/>
+            <p:calendar id="fechaNac" value="#{forma.fechaNac}"  navigator="true"  styleClass="calendario"
+                        disabled="#{forma.persona.perCodigo ne null and forma.personaOrig.perFechaNacimiento ne null}"
+                        pattern="dd-MMMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  
+                        showOn="button" autocomplete="off" tabindex="45" required="true" requiredMessage="Fecha de nacimiento obligatoria" >
+                <p:ajax  event="dateSelect" process="@this" />
+            </p:calendar>
+            <p:message for="fechaNac" display="icon" />
+        </p:panelGrid>
+        <p:outputLabel  value="Lugar de trabajo:" for="lugarTrab"/>
+        <p:panelGrid columns="2" >
+            <p:inputText id="lugarTrab" value="#{forma.persona.perLugarTrabajo}" autocomplete="off"  
+                         style="color: black;width:600px;" tabindex="50"
+                         required="true" requiredMessage="Lugar de trabajo obligatorio"  onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                <p:watermark for="lugarTrab" value="(Nombre de la empresa o institución)" id="watermarkLugarTrab"/>
+            </p:inputText>
+            <p:message for="lugarTrab" display="icon" />   
+        </p:panelGrid> 
+    </p:panelGrid>
+    <p:panel id="panelDomicilio" header="Domicilio actual" style="height: 100px;">
+        <p:panelGrid columns="4" styleClass="ui-panelgrid-blank ui-panelgridPreFrm form-group" columnClasses="colAncho40 colorLabel,colAncho300,colAncho40 colorLabel,colAncho300" >
+            <p:outputLabel value="País:" for="selectOneMenuPais"/>
+            <p:panelGrid columns="2" >
+                <p:selectOneMenu id="selectOneMenuPais" required="true" requiredMessage="País de domicilio obligatorio" tabindex="55"
+                                 value="#{forma.paiCodigo}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarPai">
+                    <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true" />
+                    <f:selectItems value="#{forma.listaPais}" var="paisDom" itemValue="#{paisDom.paiCodigo}" itemLabel="#{paisDom.paiNombre}"/>
+                    <p:ajax  event="change"  process="@this" partialSubmit="true" update="selectOneMenuCiud"  listener="#{forma.cargarCiudades()}" />
+                </p:selectOneMenu>                                
+                <p:message for="selectOneMenuPais" display="icon" />   
+            </p:panelGrid>
+            <p:outputLabel value="Ciudad:" for="selectOneMenuCiud" />
+            <p:panelGrid columns="2" >
+                <p:selectOneMenu id="selectOneMenuCiud" required="true" requiredMessage="Ciudad de domicilio requerida" tabindex="60"
+                                 value="#{forma.ciuCodigo}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarCiu">
+                    <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" />
+                    <f:selectItems value="#{forma.listaCiudades}"  var="ciudadDom" itemValue="#{ciudadDom.prinCiudadPK.ciuCodigo}" itemLabel="#{ciudadDom.ciuNombre}"/>
+                </p:selectOneMenu>                                
+                <p:message for="selectOneMenuCiud" display="icon" />   
+            </p:panelGrid>
+        </p:panelGrid> 
+        <p:panelGrid columns="5" styleClass="ui-panelgrid-blank ui-panelgridPreFrm form-group" columnClasses="colAncho40 colorLabel,,,,colAncho40 colorLabel,">
+            <p:outputLabel  value="Dirección:" for="direcDom"/>
+            <p:inputText id="direcDom" value="#{forma.persona.perDirecDom}" autocomplete="off"  tabindex="65" style="width:600px;"
+                         required="true" requiredMessage="Dirección de domicilio obligatorio" styleClass="campoNoEditado"  onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                <p:watermark for="direcDom" value="(calle, No., intersección)" id="watermarkDirDom" />
+            </p:inputText>
+            <p:message for="direcDom" display="icon" />                                   
+            <p:outputLabel  value="Teléfono:"/>
+            <p:inputMask id="direcDomTelef" value="#{forma.persona.perTelefonoDom}" tabindex="70"
+                         style="width:150px;" mask="?9999999999999"  autocomplete="off" />
+        </p:panelGrid>
+    </p:panel>
+    <p:panel id="panelTitulo" header="Título académico" style="height: 150px;">
+        <p:panelGrid columns="3" styleClass="ui-panelgrid-blank ui-panelgridPreFrm form-group" columnClasses="colAncho150 colorLabel,,">
+            <p:outputLabel  value="Universidad:" for="universidadTit"  />
+            <p:selectOneMenu id="universidadTit" required="true" requiredMessage="Universidad donde obtuvo el título obligatorio" 
+                             widgetVar="widgetVarUniv" 
+                             value="#{forma.prinEntidad.entCodigo}" styleClass="ui-selectonemenuUASB" >
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{forma.listaUniversidades}" var="entidad" itemValue="#{entidad.entCodigo}" itemLabel="#{entidad.entNombre}"/>
+                <!--  var="univ" converter="entidadConverter"
+                p:column>
+                    <h:outputText value="#{univ.entNombre}" />
+                </p:column>
+                <p:column style="width:10%">
+                    <h:outputText value="#{univ.entAbreviatura}" />
+                </p:column-->                                    
+            </p:selectOneMenu>                                
+            <p:message for="universidadTit" display="icon" />   
+            <p:outputLabel  value="Pais:" for="paisTit" styleClass="colorLabel" />
+            <p:selectOneMenu id="paisTit" required="true" requiredMessage="País donde obtuvo el título obligatorio" 
+                             value="#{forma.paiCodigoTit}" styleClass="ui-selectonemenuUASB" widgetVar="widgetVarPaiTit">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItems value="#{forma.listaPais}" var="paisDom" itemValue="#{paisDom.paiCodigo}" itemLabel="#{paisDom.paiNombre}"/>
+            </p:selectOneMenu>                                
+            <p:message for="paisTit" display="icon" />  
+            <p:outputLabel for="nivelAcad"  value="Nivel académico:"  styleClass="colorLabel" />
+            <p:selectOneMenu id="nivelAcad" value="#{forma.prinTitulo.titNivelAcad}" styleClass="ui-selectonemenuUASB"
+                             required="true" requiredMessage="Nivel académico del título obligatorio" widgetVar="widgetVarNivel">
+                <f:selectItem itemLabel="Seleccione uno..." itemValue="#{null}" noSelectionOption="true"/>
+                <f:selectItem itemLabel="DOCTORADO" itemValue="DOCTORADO" />
+                <f:selectItem itemLabel="MAESTRIA" itemValue="MAESTRIA" />
+                <f:selectItem itemLabel="ESPECIALIZACIÓN" itemValue="ESPECIALIZACIÓN" />
+                <p:ajax  event="change" process="@this" update="outputLabelTit"/>
+            </p:selectOneMenu>   
+            <p:message for="nivelAcad" display="icon" />  
+            <p:outputLabel id="outputLabelTit" value="Título de #{forma.prinTitulo.titNivelAcad}" for="nombreTit"  />
+            <p:inputText id="nombreTit" value="#{forma.prinTitulo.titulo}" autocomplete="off"  onfocus="this.setSelectionRange(0, this.value.length)"
+                         style="width:700px;text-transform: uppercase" required="true" requiredMessage="Título obtenido obligatorio">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                <p:watermark for="nombreTit" value="(Nivel Posgrado)" id="watermarkNomTit" />
+            </p:inputText>
+            <p:message for="nombreTit" display="icon" />                                   
+
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

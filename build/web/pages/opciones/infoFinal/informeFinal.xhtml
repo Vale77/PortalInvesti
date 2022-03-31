@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{informeFinalBean}"/>
+    </ui:define>
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{informeFinalBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            body.layout-compact .ui-button.ui-button-icon-only{width: 24px;height: 24px}
+            body.layout-compact .ui-selectonemenuUASB .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            body.layout-compact .ui-selectonemenuUASB.ui-state-disabled {opacity: 1.0;} 
+            body.layout-compact .ui-dataTable-Val tbody tr {font-size: 11px;}
+            body.layout-compact .ui-dataTable-Val thead tr th{font-size: 12px;background-color: #e8e1e1;padding: 3px 5px;}
+            body.layout-compact .ui-dataTable-Val .ui-datatable-header{padding: 3px 5px;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;font-size: 14px}
+            body .ui-datatable tbody tr.ui-datatable-odd.ui-state-highlight{background-color: #f3ae08;} 
+            .ui-panelgridSeleccion{font-size: 12px}
+            .ui-panelgridSeleccion.form-group .ui-panelgrid-cell{padding: 5px 5px;}
+            body.layout-compact .ui-column-filter.ui-inputfield{width: 95% !important;font-size: 11px;text-transform: uppercase}
+            body.layout-compact .ui-menuProrroga {padding: 4px 0;}
+            body.layout-compact .ui-menuProrroga .ui-menu-list li.ui-menuitem .ui-menuitem-link{font-size: 12px;line-height:13px}
+            .ui-icon-number-uno {background-image: url("#{resource['/images/circled-1-c-50.png']}") !important ;background-size: 20px 20px;}
+            .ui-icon-number-dos {background-image: url("#{resource['/images/circled-2-c-50.png']}") !important ;background-size: 20px 20px;}
+            .ui-icon-number-tres {background-image: url("#{resource['/images/circled-3-c-50.png']}") !important ;background-size: 20px 20px;}
+            .ui-icon-letra-s {background-image: url("#{resource['/images/circled-s-50.png']}") !important ;background-size: 20px 20px;}
+        </style>
+        <script>
+            var currentEvent;
+            $(document).ready(function () {
+                PrimeFaces.widget.ContextMenu.prototype.show = function (e) {
+                    //hide other contextmenus if any
+                    $(document.body).children('.ui-contextmenu:visible').hide();
+                    if (e) {
+                        currentEvent = e;
+                    }
+                    var win = $(window),
+                            left = e.pageX,
+                            top = e.pageY,
+                            width = this.jq.outerWidth(),
+                            height = this.jq.outerHeight();
+
+                    //collision detection for window boundaries
+                    if ((left + width) > (win.width()) + win.scrollLeft()) {
+                        left = left - width;
+                    }
+                    if ((top + height) > (win.height() + win.scrollTop())) {
+                        top = top - height;
+                    }
+                    if (this.cfg.beforeShow) {
+                        this.cfg.beforeShow.call(this);
+                    }
+                    this.jq.css({
+                        'left': left,
+                        'top': top,
+                        'z-index': ++PrimeFaces.zindex
+                    }).show();
+                    e.preventDefault();
+                };
+            });
+        </script>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Informes finales - proyectos en ejecución</h3>
+        <!--h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgridSeleccion form-group">
+                    <p:outputLabel for="selectOneMenuAnio" value="Año académico:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuAnio" value="#{informeFinalBean.anio}" tabindex="2"  styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{informeFinalBean.listaAnios}" var="anio" itemValue="#{anio.anio}" itemLabel="#{anio.nombreCiclo}"/>
+                        <p:ajax  update="@form,formValoracion,formMenuBar,formContextual" listener="#{informeFinalBean.retrieveBy}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+            </div>
+        </h:form-->
+         <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                    <p:outputLabel for="selectOneMenuConvo" value="Convocatoria:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuConvo" value="#{informeFinalBean.convocatoria}" tabindex="110"  styleClass="ui-selectonemenuUASB" 
+                                     converter="convocatoriaConverter" var="tabla" >
+                        <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{informeFinalBean.listaConvocatorias}" var="convo" itemValue="#{convo}" itemDescription="#{''.concat(convo.cvoCodigo)}"
+                                       itemLabel="#{convo.inveTipoConvocatoria.tcvNombre}: #{informeFinalBean.formatDate(convo.cvoFechaInicio)}  -  #{informeFinalBean.formatDate(convo.cvoFechaFin)}  ----&gt; #{convo.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}"/>
+                        <p:column headerText="Tipo" width="10%">
+                            <h:outputText value="#{tabla.inveTipoConvocatoria.tcvNombre}"/>
+                        </p:column>
+                        <p:column headerText="Inicio" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{tabla.cvoFechaInicio ne null}">
+                                <f:param value="#{tabla.cvoFechaInicio}"/>
+                            </h:outputFormat>         
+                        </p:column>         
+                        <p:column headerText="Final" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{tabla.cvoFechaFin ne null}">
+                                <f:param value="#{tabla.cvoFechaFin}"/>
+                            </h:outputFormat>                      
+                        </p:column>  
+                        <p:column headerText="Estado" width="10%">
+                            <h:outputText value="#{tabla.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}" styleClass="colorLabel"
+                                          style="color:#{tabla.cvoEstado eq 'A' ? 'green':'red'};"/>
+                        </p:column>                        
+                        <p:ajax update="@form,formValoracion,formMenuBar" listener="#{informeFinalBean.retrieveBy}" resetValues="true"
+                                />
+                    </p:selectOneMenu>                
+                </p:panelGrid>
+            </div>
+        </h:form>
+        <h:form id="formValoracion">
+            <p:remoteCommand name="deSeleccionar" ignoreAutoUpdate="true" partialSubmit="true" oncomplete="PF('widgetInforme').unselectAllRows();" 
+                             action="#{informeFinalBean.resetFilter()}"/>
+            <p:dataTable id="dataTableInformes" var="proyVal" value="#{informeFinalBean.listaProyValorados}" selectionMode="single" reflow="true" 
+                         filteredValue="#{informeFinalBean.listaProyValoradosFilterd}" 
+                         disabledSelection="#{proyVal.inveLector.inveProyecto.pryEstadoReg eq 'S' || proyVal.inveLector.inveProyecto.pryEstadoReg eq 'X'}"
+                         selection="#{informeFinalBean.inveValoracionSelected}" rowKey="#{proyVal.valCodigo}"  styleClass="ui-dataTable-Val"
+                         widgetVar="widgetInforme" scrollable="true" scrollHeight="350" rowIndexVar="fila" sortBy="#{proyVal.inveLector.inveProyecto.pryCodigoCi}"
+                         emptyMessage="#{informeFinalBean.anio eq null ? 'Seleccione convocatoria' : 
+                                         informeFinalBean.listaProyValorados.size() eq 0 ?'No existen proyectos con valoraciones aprobadas para este año':''}">
+                <f:facet name="header">
+                    PROYECTOS EN EJECUCIÓN
+                </f:facet>
+                <p:ajax event="rowSelect" update="@this" listener="#{informeFinalBean.onRowSelect}"/>
+                <p:ajax event="rowUnselect" update="@this" listener="#{informeFinalBean.onRowUnselect}"/>
+                <p:ajax event="contextMenu" update=":formContextual:menuContextual" listener="#{informeFinalBean.onRowSelect}" oncomplete="PF('widgetVarCtx').show(currentEvent);"/>
+                <p:ajax event="filter"  onsuccess="deSeleccionar();"/> 
+                <p:column headerText="Ord." width="3%" style="text-align: center">
+                    <h:outputText value="#{fila+1}"/>
+                </p:column> 
+                <p:column headerText="Código" width="4%" style="text-align: center" filterBy="#{proyVal.inveLector.inveProyecto.pryCodigoCi}" sortBy="#{proyVal.inveLector.inveProyecto.pryCodigoCi}">
+                    <h:outputText value="#{proyVal.inveLector.inveProyecto.pryCodigoCi}" style="color:#{proyVal.inveEstadoValoracion.esvCodigo eq 'a' ? '#0ab412':'blue'}" styleClass="colorLabel"/>
+                </p:column>                 
+                <p:column headerText="Título" width="38%"  filterBy="#{proyVal.inveLector.inveProyecto.pryTitulo}" sortBy="#{proyVal.inveLector.inveProyecto.pryTitulo}">
+                    <h:outputText value="#{proyVal.inveLector.inveProyecto.pryTitulo}" title="#{''.concat(proyVal.inveLector.inveProyecto.pryCodigo)}"
+                                  style="text-transform: uppercase"/>
+                </p:column> 
+                <p:column headerText="Investigador" width="20%" sortBy="#{proyVal.inveLector.inveProyecto.prinPersona.perPrimerApellido} #{proyVal.inveLector.inveProyecto.prinPersona.perSegundoApellido}"
+                          filterBy="#{proyVal.inveLector.inveProyecto.prinPersona.perPrimerApellido} #{proyVal.inveLector.inveProyecto.prinPersona.perSegundoApellido}">
+                    <h:outputText value="#{proyVal.inveLector.inveProyecto.prinPersona.perPrimerApellido} #{proyVal.inveLector.inveProyecto.prinPersona.perSegundoApellido} #{proyVal.inveLector.inveProyecto.prinPersona.perNombres}"
+                                  style="text-transform: uppercase"/>
+                </p:column>                   
+                <p:column headerText="Fecha Limite" width="7%" style="text-align: center" sortBy="#{proyVal.inveSeguimiento.segFechaLimite}">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" 
+                                    style="color:#{proyVal.pro1 eq null ? '#0ab412':'red'};text-transform: uppercase" >
+                        <f:param value="#{proyVal.inveSeguimiento.segFechaLimite}"/>
+                    </h:outputFormat>     
+                </p:column>     
+                <p:column headerText="Prórroga 1" width="7%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" rendered="#{proyVal.pro1 ne null}" title="#{proyVal.comunic1}"
+                                    style="color:#{proyVal.pro2 eq null ? '#0ab412':'red'};text-transform: uppercase" >
+                        <f:param value="#{proyVal.pro1}"/>
+                    </h:outputFormat> 
+                </p:column>    
+                <p:column headerText="Prórroga 2" width="7%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" rendered="#{proyVal.pro2 ne null}" title="#{proyVal.comunic2}"
+                                    style="color:#{proyVal.proExt eq null ? '#0ab412':'red'};text-transform: uppercase">
+                        <f:param value="#{proyVal.pro2}"/>
+                    </h:outputFormat> 
+                </p:column> 
+                <p:column headerText="Prórroga Ext." width="7%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:#0ab412;text-transform: uppercase"
+                                    rendered="#{proyVal.proExt ne null}" title="#{proyVal.comunic3}">
+                        <f:param value="#{proyVal.proExt}"/>
+                    </h:outputFormat> 
+                </p:column>                   
+                <p:column headerText="Estado" width="7%" style="text-align: center" >
+                    <h:outputText value="#{proyVal.inveLector.inveProyecto.pryEstadoReg eq 'X' ? 'Retirado' : proyVal.inveLector.inveProyecto.pryEstadoReg eq 'S' ? 'Suspendido':
+                                  proyVal.inveInformeOper.iopFechaCrea ne null ? 'Recibido':proyVal.dias eq 0 ? 'Para HOY': (proyVal.dias lt 0 ? 'A '.concat(proyVal.dias*-1).concat(' Día(s)'):'Atraso')}" 
+                                  styleClass="colorLabel"  style="text-transform: uppercase;
+                                  color: #{proyVal.inveLector.inveProyecto.pryEstadoReg eq 'X' ? 'darkblue' : proyVal.inveLector.inveProyecto.pryEstadoReg eq 'S' ? 'red':proyVal.inveInformeOper.iopFechaCrea ne null ? '#0ab412':proyVal.dias eq 0 ? '#00A500': proyVal.dias le -5 ? '#0000FF':'#FF0000'}"/>
+                </p:column>     
+            </p:dataTable>
+        </h:form>
+        <h:form id="formContextual">
+            <p:contextMenu id="menuContextual" for="formValoracion:dataTableInformes"  widgetVar="widgetVarCtx"  styleClass="ui-menuProrroga" beforeShow="return true;"
+                           rendered="#{informeFinalBean.listaProyValorados.size() ne 0}">
+                <p:menuitem value="Prórroga 1"  update="dlgEdit" icon="ui-icon-number-uno" oncomplete="PF('dlgEdit').show()" action="#{informeFinalBean.registrarTransaccion('1')}"
+                            disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopFechaCrea ne null or informeFinalBean.inveValoracionSelected.pro1 ne null}"/>
+                <p:menuitem value="Prórroga 2"  update="dlgEdit" icon="ui-icon-number-dos" oncomplete="PF('dlgEdit').show()" action="#{informeFinalBean.registrarTransaccion('2')}"
+                            disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopFechaCrea ne null or(informeFinalBean.inveValoracionSelected.pro2 ne null
+                                        or informeFinalBean.inveValoracionSelected.pro1 eq null 
+                                        or informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinCategoriaInvest.caiCodigo ne 1)}"/>
+                <p:menuitem value="Prórroga extraordinaria"  update="dlgEdit" icon="ui-icon-number-tres" oncomplete="PF('dlgEdit').show()" action="#{informeFinalBean.registrarTransaccion('3')}"
+                            disabled="#{informeFinalBean.inveValoracionSelected.inveInformeOper.iopFechaCrea ne null or (informeFinalBean.inveValoracionSelected.proExt ne null
+                                        or informeFinalBean.inveValoracionSelected.pro2 eq null
+                                        or informeFinalBean.inveValoracionSelected.inveLector.inveProyecto.prinCategoriaInvest.caiCodigo ne 1)}"/>
+                <p:separator/>
+                <p:menuitem value="Suspensión"  update="dlgEdit" icon="ui-icon-letra-s" oncomplete="PF('dlgEdit').show()" action="#{informeFinalBean.registrarTransaccion('S')}"/>
+            </p:contextMenu>     
+        </h:form>
+    </ui:define>
+</ui:composition>

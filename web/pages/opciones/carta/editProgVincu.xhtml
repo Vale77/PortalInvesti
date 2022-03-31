@@ -1,0 +1,18 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:panelGrid id="grid" columns="3"  styleClass="ui-panelgrid-blank form-group">
+        <p:outputLabel value="Programa vinculado:" styleClass="colorLabel" for="selectOneMenuProgVincu"/>
+        <p:selectOneMenu id="selectOneMenuProgVincu" value="#{cartaBean.programa}" converter="progConverter"
+                         required="true" requiredMessage="Programa vinculado o catedra requerido"  style="width: 650px;">
+            <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+            <f:selectItems value="#{cartaBean.listaProgramas}" var="prog" itemValue="#{prog}" itemLabel="#{prog.nombrePrograma}"/>  
+        </p:selectOneMenu> 
+        <p:message for="selectOneMenuProgVincu" display="icon" />   
+    </p:panelGrid>
+
+</ui:composition>
+

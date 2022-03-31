@@ -1,0 +1,57 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ec.edu.uasb.investigacion.converter;
+
+import ec.edu.uasb.vinculacion.entities.VincCine;
+import ec.edu.uasb.vinculacion.session.VincCineFacadeLocal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+/**
+ *
+ * @author victor.barba
+ */
+@FacesConverter("cineConverter")
+public class CineConverter implements Converter {
+
+    VincCineFacadeLocal vincCineFacadeLocal = lookupVincCineFacadeLocal();
+
+    @Override
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+        if (value != null && value.trim().length() > 0) {
+            return vincCineFacadeLocal.find(value);
+        }
+        return null;
+    }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+        if (value != null) {
+            VincCine c = (VincCine) value;
+            if (!c.getCinCodigo().trim().equals("")) {
+                return c.getCinCodigo();
+            }
+        }
+        return null;
+    }
+
+    private VincCineFacadeLocal lookupVincCineFacadeLocal() {
+        try {
+            Context c = new InitialContext();
+            return (VincCineFacadeLocal) c.lookup("java:global/PortalInvest/VincCineFacade!ec.edu.uasb.vinculacion.session.VincCineFacadeLocal");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+}

@@ -1,0 +1,125 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        .ui-panelgridUno.form-group .ui-panelgrid-cell{padding: 3px 3px}
+        .ui-panelgridUno.form-group{width: 100%}
+        body.layout-compact .ui-dataTable-crono{width: 950px;}
+        body.layout-compact .ui-dataTable-crono thead tr th{font-size: 12px;background-color: #e8e1e1;}
+        body.layout-compact .ui-dataTable-crono tbody tr.ui-widget-content td{padding: 5px 5px;font-size: 12px}
+        body.layout-compact .ui-dataTable-crono .ui-datatable-header{padding: 0px 0px;}
+        body.layout-compact .ui-dataTable-crono .ui-datatable-header tbody tr.ui-widget-content td{background-color: #2b7c8a;border: 0 none;color:white}
+        .ui-chkbox-boxMes .ui-state-disabled{opacity: 1.0}
+        .col1HdTabla1{text-align: left;width: 80%}
+        .col2HdTabla1{text-align: right;width: 20%}    
+
+    </style>
+    <p:remoteCommand name="refreshAddBoton" update="form:dataTableCrono:headerActivCrono" />
+    <p:panelGrid columns="1" styleClass="ui-panelgridUno form-group" >
+        <p:dataTable id="dataTableCrono" var="crono" value="#{formularioBean.listaCronoMensual}"  rowIndexVar="fila"
+                     selection="#{formularioBean.selectedRow}" rowKey="#{crono.croCodigo}" scrollable="true" scrollHeight="350"  
+                     styleClass="ui-dataTable-crono" widgetVar="widgetDataTableCrono" editable="true">
+            <p:ajax event="rowEditInit" listener="#{formularioBean.rowEditInit}" oncomplete="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','hidden')});refreshAddBoton();"/>
+            <p:ajax event="rowEdit" listener="#{formularioBean.onRowEdit}" update="form:dataTableCrono:headerActivCrono"
+                    oncomplete="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','visible')});" />
+            <p:ajax event="rowEditCancel" listener="#{formularioBean.onRowCancel}" onstart="$('.ui-row-editor span.ui-icon-pencil').each(function(){$(this).css('visibility','visible')});refreshAddBoton();"/>
+            <f:facet name="header">
+                <p:panelGrid id="headerActivCrono" columns="2"  columnClasses="col1HdTabla1,col2HdTabla1" style="background-color: transparent;font-weight: bold;">
+                    ACTIVIDADES A REALIZAR #{formularioBean.disabledAdd}
+                    <p:commandButton id="commandButtonAdd" value="Añadir" styleClass="GreenButton commandButtonAdd" icon="ui-icon-add" 
+                                     disabled="#{formularioBean.disabledAdd}"
+                                     immediate="true" partialSubmit="true" update="form:dataTableCrono"  action="#{formularioBean.addCrono()}" />
+                </p:panelGrid>
+            </f:facet>            
+            <p:column headerText="Ordinal" width="5%" style="text-align: center">
+                <h:outputText value="#{fila+1}" style="color: brown;font-weight: bold"/>
+            </p:column>
+            <p:column headerText="Actividad"  width="60%" >
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <h:outputText id="outputActiv" value="#{crono.croActividad}" />
+                    </f:facet>
+                    <f:facet name="input" >
+                        <p:scrollPanel mode="native" style="width:100%;height:120px">
+                            <p:inputTextarea id="inputActiv" rows="6" cols="90" value="#{crono.croActividad}" style="color: #2196F3;width: 100%;" 
+                                             required="true" requiredMessage="Actividad obligatoria" 
+                                             counter="displayTextCrono" maxlength="1000" counterTemplate="{0} caracteres disponibles" tabindex="105">
+                                <p:ajax event="change"/>
+                                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                                <p:watermark for="inputActiv" value="(incluya aquí la actividad)" id="watermarkinputActiv" />
+                            </p:inputTextarea>
+                        </p:scrollPanel>
+                        <h:outputText id="displayTextCrono" style="color: brown;font-size: 12px;font-weight: bold"/>
+                    </f:facet>
+                </p:cellEditor>
+            </p:column>
+            <p:column headerText="Mes 1" width="5%" style="text-align: center">
+                <p:cellEditor >
+                    <f:facet name="output">
+                        <p:inputText disabled="true" style="background-color: #{crono.meses[0] ?'#000000':'transparent'}; width: 95%"/>
+                    </f:facet>
+                    <f:facet name="input" >
+                        <p:selectBooleanCheckbox value="#{crono.meses[0]}" />
+                    </f:facet>  
+                </p:cellEditor>
+            </p:column>
+            <p:column headerText="Mes 2" width="5%" style="text-align: center">
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <p:inputText disabled="true" style="background-color: #{crono.meses[1] ?'#000000':'transparent'}; width: 95%"/>
+                    </f:facet>
+                    <f:facet name="input" >
+                        <p:selectBooleanCheckbox value="#{crono.meses[1]}" />
+                    </f:facet>  
+                </p:cellEditor>
+            </p:column>
+            <p:column headerText="Mes 3" width="5%" style="text-align: center">
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <p:inputText disabled="true" style="background-color: #{crono.meses[2] ?'#000000':'transparent'}; width: 95%"/>
+                    </f:facet>
+                    <f:facet name="input" >
+                        <p:selectBooleanCheckbox value="#{crono.meses[2]}" />
+                    </f:facet>  
+                </p:cellEditor>
+            </p:column>
+            <p:column headerText="Mes 4" width="5%" style="text-align: center">
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <p:inputText disabled="true" style="background-color: #{crono.meses[3] ?'#000000':'transparent'}; width: 100%"/>
+                    </f:facet>
+                    <f:facet name="input" >
+                        <p:selectBooleanCheckbox value="#{crono.meses[3]}" />
+                    </f:facet>  
+                </p:cellEditor>
+            </p:column> 
+            <p:column headerText="Mes 5" width="5%" style="text-align: center">
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <p:inputText disabled="true" style="background-color: #{crono.meses[4] ?'#000000':'transparent'}; width: 100%"/>
+                    </f:facet>
+                    <f:facet name="input" >
+                        <p:selectBooleanCheckbox value="#{crono.meses[4]}" />
+                    </f:facet>  
+                </p:cellEditor>
+            </p:column>
+            <p:column headerText="Mes 6" width="5%" style="text-align: center">
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <p:inputText disabled="true" style="background-color: #{crono.meses[5] ?'#000000':'transparent'}; width: 100%"/>
+                    </f:facet>
+                    <f:facet name="input" >
+                        <p:selectBooleanCheckbox value="#{crono.meses[5]}" />
+                    </f:facet>  
+                </p:cellEditor>
+            </p:column>
+            <p:column headerText="Editar" width="5%" style="text-align: center">
+                <p:rowEditor />
+            </p:column>  
+        </p:dataTable>
+    </p:panelGrid>
+</ui:composition>

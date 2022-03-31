@@ -1,0 +1,45 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <style type="text/css">
+        .ui-panelgridRubro.form-group .ui-panelgrid-cell{padding: 5px 5px;}
+    </style>
+    
+    <p:focus context="pnlGrid" />
+    <p:panelGrid id="pnlGrid" columns="2"  styleClass="ui-panelgridRubro ui-panelgrid-blank form-group">
+        <p:outputLabel for="concepto" value="Concepto:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:inputText id="concepto" value="#{rubrosBean.inveRubroEdit.rubNombre}" autocomplete="off"  required="true"
+                         requiredMessage="Concepto obligatorio" style="width: 300px;"
+                         onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputText>
+            <p:message for="concepto" display="icon" />
+        </p:panelGrid> 
+        <p:outputLabel for="descrip" value="Descripción:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:inputTextarea id="descrip" value="#{rubrosBean.inveRubroEdit.rubDescripcion}"  required="true" rows="2" cols="70"
+                         requiredMessage="Descripción del rubro obligatorio" 
+                         onfocus="this.setSelectionRange(0, this.value.length)">
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+            </p:inputTextarea>
+            <p:message for="descrip" display="icon" />        
+        </p:panelGrid>
+        <p:outputLabel for="monto" value="Monto:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2">
+            <p:inputNumber id="monto" value="#{rubrosBean.inveRubroEdit.rubMonto}" autocomplete="off" 
+                           required="true" requiredMessage="Monto obligatorio" decimalSeparator="." decimalPlaces="2"
+                           leadingZero="deny" symbol="$" thousandSeparator="," size="8"
+                           onfocus="this.setSelectionRange(0, this.value.length)"/>
+            <p:message for="monto" display="icon" />        
+        </p:panelGrid>      
+        <p:outputLabel for="grupo" value="Grupos:" styleClass="colorLabel"/>
+        <p:selectManyCheckbox id="grupo" value="#{rubrosBean.selectedGrupos}" layout="grid" columns="1" 
+                              required="true" requiredMessage="Grupo requerido, al menos uno" >
+            <f:selectItems value="#{rubrosBean.listaGrupos}" var="grp" itemLabel="#{grp.grpNombre}" itemValue="#{grp.grpCodigo}" />
+        </p:selectManyCheckbox>                
+    </p:panelGrid>
+</ui:composition>

@@ -1,0 +1,77 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"    xmlns:pu="http://primefaces.org/ultima"  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:form id="menuform"> 
+        <p:idleMonitor timeout="${session.maxInactiveInterval * 1000}">
+            <p:ajax event="idle"  listener="#{loginMgmtBean.isSessionValid}"
+                    oncomplete="window.location = '#{facesContext.externalContext.requestContextPath}/error/sessionExpired.xhtml';"/>
+        </p:idleMonitor>
+        <div class="layout-menu #{guestPreferences.menuClass}">
+            <div class="nano">
+                <div class="nano-content menu-scroll-content">
+                    <ui:fragment rendered="#{guestPreferences.profileMode == 'inline' and guestPreferences.menuLayout != 'menu-layout-static menu-layout-horizontal'}">
+                        <div class="profile">
+                            <div class="profile-image"></div>
+                            <a id="profile-options" href="#">
+                                <span class="profile-name">Jane Williams</span>
+                                <i class="material-icons">&#xE313;</i>
+                            </a>
+                        </div>
+                    </ui:fragment>
+
+                    <pu:menu widgetVar="me">
+                        <p:menuitem id="um_dashboard" value="Inicio" icon="&#xE871;" action="/pages/principal" 
+                                    rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'USU_INVE')}"/>
+                        <p:submenu id="um_parametros" label="Parámetros" icon="&#xE8B9;"
+                                   rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'ADM_INVE')}">
+                            <p:menuitem value="Grupos de convocatoria" icon="&#xE8D2;" action="/pages/parametros/grupos"/>  
+                            <p:menuitem value="Ambitos geográficos" icon="&#xE8D2;" action="/pages/parametros/ambitoGeo" />   
+                            <p:menuitem value="Disciplinas científicas" icon="&#xE8D2;" action="/pages/parametros/disciplina"/>
+                            <p:menuitem value="Objetivos socio-económicos" icon="&#xE8D2;" action="/pages/parametros/objetivoSocEco" />
+                            <p:menuitem value="Grupos de investigación" icon="&#xE8D2;" action="/pages/parametros/grupoInvest"/>  
+                            <p:menuitem value="Fuente de financiamiento" icon="&#xE8D2;" action="/pages/parametros/fuenteFin" />
+                            <p:menuitem value="Roles de investigación" icon="&#xE8D2;" action="/pages/parametros/roles" />    
+                            <p:menuitem value="Estados de valoración" icon="&#xE8D2;" action="/pages/parametros/estadoValo" />    
+                            <p:menuitem value="Rubros presupuesto" icon="&#xE8D2;" action="/pages/parametros/rubros" />    
+                        </p:submenu>    
+                        <p:menuitem value="Registro" icon="&#xE8D2;" action="/pages/opciones/registro/registroProyecto" oncomplete="window.location.reload();"
+                                    rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'USU_INVE')}"/>           
+                        <p:submenu id="um_hierarchy" label="Opciones" icon="&#xE5D2;"
+                                   rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}">
+                            <p:menuitem value="Convocatorias" icon="&#xE8D2;" action="/pages/opciones/convoca/convocatoria" 
+                                        rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>   
+                            <p:menuitem value="Proyectos" icon="&#xE8D2;" action="/pages/opciones/proyecto/proyecto"
+                                        rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>
+                            <p:menuitem value="Pertinencias - Constancias" icon="&#xE8D2;" action="/pages/opciones/carta/carta"
+                                        rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')
+                                                    or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_AREA')}"/>                                                 
+                            <p:menuitem value="Asignación Lector Proyectos" icon="&#xE8D2;" action="/pages/opciones/lectura/lector"
+                                        rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>  
+                            <p:menuitem value="Valoraciones de Proyectos" icon="&#xE8D2;" action="/pages/opciones/lectura/valoracion"
+                                        rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>   
+                            <p:submenu id="um_infoFinal" label="Informe Final" icon="&#xE5D2;"
+                                       rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}">
+                                <p:menuitem value="Entrega Informe" icon="&#xE8D2;" action="/pages/opciones/infoFinal/informeFinal"
+                                            rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>     
+                                <p:menuitem value="Asignación Lector" icon="&#xE8D2;" action="/pages/opciones/infoFinal/lector/lectorInformeFinal"
+                                            rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>  
+                                <p:menuitem value="Valoración Informe" icon="&#xE8D2;" action="/pages/opciones/infoFinal/valorac/valorInformeFinal"
+                                            rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>  
+                            </p:submenu>
+                            <p:menuitem value="Cierre de investigaciones" icon="&#xE8D2;" action="/pages/opciones/cierre/cierreProyecto"
+                                        rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}"/>   
+                        </p:submenu>
+                        <p:submenu id="um_reportes" label="Consultas y reportes" icon="&#xE5D2;"
+                                   rendered="#{fn:containsIgnoreCase(sessionScope.perfiles,'USU_SIST') or fn:containsIgnoreCase(sessionScope.perfiles,'ADM_INVE')
+                                               or fn:containsIgnoreCase(sessionScope.perfiles,'SEC_INVE')}">
+                            <p:menuitem value="Documentos" icon="&#xE8D2;" action="/pages/reportes/documentos"/> 
+                            <p:menuitem value="Reportes" icon="&#xE8D2;" action="/pages/reportes/reportes"/> 
+                        </p:submenu>
+                    </pu:menu>
+                </div>
+            </div>
+        </div>
+    </h:form>
+</ui:composition>

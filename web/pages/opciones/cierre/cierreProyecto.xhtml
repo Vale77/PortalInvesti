@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{cierreBean}"/>
+    </ui:define>
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{cierreBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            body.layout-compact .ui-button.ui-button-icon-only{width: 24px;height: 24px}
+            body.layout-compact .ui-selectonemenuUASB .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            body.layout-compact .ui-selectonemenuUASB.ui-state-disabled {opacity: 1.0;} 
+            body.layout-compact .ui-dataTable-Val tbody tr {font-size: 11px;}
+            body.layout-compact .ui-dataTable-Val thead tr th{font-size: 12px;background-color: #e8e1e1;padding: 3px 5px;}
+            body.layout-compact .ui-dataTable-Val .ui-datatable-header{padding: 3px 5px;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;font-size: 14px}
+            body .ui-datatable tbody tr.ui-datatable-odd.ui-state-highlight{background-color: #f3ae08;} 
+            .ui-panelgridSeleccion{font-size: 12px}
+            .ui-panelgridSeleccion.form-group .ui-panelgrid-cell{padding: 5px 5px;}
+            body.layout-compact .ui-column-filter.ui-inputfield{width: 95% !important;font-size: 11px;text-transform: uppercase}
+            body.layout-compact .ui-menuProrroga {padding: 4px 0;}
+            body.layout-compact .ui-menuProrroga .ui-menu-list li.ui-menuitem .ui-menuitem-link{font-size: 12px;line-height:13px}
+        </style>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Cierre de investigaciones</h3>
+        <!--h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgridSeleccion form-group">
+                    <p:outputLabel for="selectOneMenuAnio" value="Año académico:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuAnio" value="#{cierreBean.anio}" tabindex="2"  styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{cierreBean.listaAnios}" var="anio" itemValue="#{anio.anio}" itemLabel="#{anio.nombreCiclo}"/>
+                        <p:ajax  update="@form,formCierre,formMenuBar" listener="#{cierreBean.retrieveBy}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+            </div>
+        </h:form-->
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                    <p:outputLabel for="selectOneMenuConvo" value="Convocatoria:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuConvo" value="#{cierreBean.convocatoria}" tabindex="110"  styleClass="ui-selectonemenuUASB" 
+                                     converter="convocatoriaConverter" var="tabla" >
+                        <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{cierreBean.listaConvocatorias}" var="convo" itemValue="#{convo}" itemDescription="#{''.concat(convo.cvoCodigo)}"
+                                       itemLabel="#{convo.inveTipoConvocatoria.tcvNombre}: #{cierreBean.formatDate(convo.cvoFechaInicio)}  -  #{cierreBean.formatDate(convo.cvoFechaFin)}  ----&gt; #{convo.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}"/>
+                        <p:column headerText="Tipo" width="10%">
+                            <h:outputText value="#{tabla.inveTipoConvocatoria.tcvNombre}"/>
+                        </p:column>
+                        <p:column headerText="Inicio" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{tabla.cvoFechaInicio ne null}">
+                                <f:param value="#{tabla.cvoFechaInicio}"/>
+                            </h:outputFormat>         
+                        </p:column>         
+                        <p:column headerText="Final" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{tabla.cvoFechaFin ne null}">
+                                <f:param value="#{tabla.cvoFechaFin}"/>
+                            </h:outputFormat>                      
+                        </p:column>  
+                        <p:column headerText="Estado" width="10%">
+                            <h:outputText value="#{tabla.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}" styleClass="colorLabel"
+                                          style="color:#{tabla.cvoEstado eq 'A' ? 'green':'red'};"/>
+                        </p:column>                        
+                        <p:ajax update="@form,formCierre,formMenuBar" listener="#{cierreBean.retrieveBy}" resetValues="true"
+                                />
+                    </p:selectOneMenu>                
+                </p:panelGrid>
+            </div>
+        </h:form>
+        <h:form id="formCierre">
+            <p:remoteCommand name="deSeleccionar" ignoreAutoUpdate="true" partialSubmit="true" oncomplete="PF('widgetCierre').unselectAllRows();" 
+                             action="#{cierreBean.resetFilter()}"/>
+            <p:dataTable id="dataTableInformes" var="proyVal" value="#{cierreBean.listaInvestigAprob}" selectionMode="single" reflow="true" 
+                         filteredValue="#{cierreBean.listaInvestigAprobFilterd}"
+                         selection="#{cierreBean.inveInveProyectoSelected}" rowKey="#{proyVal.pryCodigo}"  styleClass="ui-dataTable-Val"
+                         widgetVar="widgetCierre" scrollable="true" scrollHeight="350" rowIndexVar="fila" sortBy="#{proyVal.pryCodigoCi}"
+                         emptyMessage="#{cierreBean.anio eq null ? 'Seleccione la convocatoria' : 
+                                         cierreBean.listaInvestigAprob.size() eq 0 ?'No existen proyectos aprobados':''}">
+                <f:facet name="header">
+                    PROYECTOS APROBADOS Y NOTIFICADOS
+                </f:facet>
+                <p:ajax event="rowSelect" update="@this" listener="#{cierreBean.onRowSelect}"/>
+                <p:ajax event="rowUnselect" update="@this" listener="#{cierreBean.onRowUnselect}"/>
+                <p:ajax event="filter"  onsuccess="deSeleccionar();"/> 
+                <p:column headerText="Ord." width="3%" style="text-align: center">
+                    <h:outputText value="#{fila+1}"/>
+                </p:column> 
+                <p:column headerText="Código" width="5%" style="text-align: center" filterBy="#{proyVal.pryCodigoCi}" sortBy="#{proyVal.pryCodigoCi}">
+                    <h:outputText value="#{proyVal.pryCodigoCi}" style="color: brown" styleClass="colorLabel"/>
+                </p:column>                 
+                <p:column headerText="Título" width="30%"  filterBy="#{proyVal.pryTituloFinal ne null ? proyVal.pryTituloFinal:proyVal.pryTitulo}" sortBy="#{proyVal.pryTituloFinal ne null ? proyVal.pryTituloFinal:proyVal.pryTitulo}">
+                    <h:outputText value="#{proyVal.pryTituloFinal ne null ? proyVal.pryTituloFinal:proyVal.pryTitulo}" title="#{''.concat(proyVal.pryCodigo)}"
+                                  style="text-transform: uppercase"/>
+                </p:column> 
+                <p:column headerText="Investigador" width="20%" sortBy="#{proyVal.prinPersona.perPrimerApellido} #{proyVal.prinPersona.perSegundoApellido}"
+                          filterBy="#{proyVal.prinPersona.perPrimerApellido} #{proyVal.prinPersona.perSegundoApellido}">
+                    <h:outputText value="#{proyVal.prinPersona.perPrimerApellido} #{proyVal.prinPersona.perSegundoApellido} #{proyVal.prinPersona.perNombres}"
+                                  style="text-transform: uppercase"/>
+                </p:column>                   
+                <p:column headerText="Oficio" width="10%" style="text-align: center" sortBy="#{proyVal.notificacionAprob}">
+                    <h:outputText value="#{proyVal.notificacionAprob}" styleClass="colorLabel" style="color: blue;"/>
+                </p:column> 
+                <p:column headerText="Fecha" width="10%" style="text-align: center" sortBy="#{proyVal.fechaNotifAprob}">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" 
+                                    style="color:#0ab412;text-transform: uppercase" >
+                        <f:param value="#{proyVal.fechaNotifAprob}"/>
+                    </h:outputFormat>     
+                </p:column>   
+                <p:column headerText="Contrato/Memo" width="10%" style="text-align: center">
+                    <h:outputText value="#{(proyVal.prinCategoriaInvest.caiCodigo ne 2 and proyVal.prinCategoriaInvest.caiCodigo ne 3) ? proyVal.inveSeguimiento.segNroComunic :(proyVal.pryContrato eq null ? '': proyVal.pryContrato)}" 
+                                  style="color: #{proyVal.prinCategoriaInvest.caiCodigo eq 2 or proyVal.prinCategoriaInvest.caiCodigo eq 3  ? 'darkblue':'#f5570f'};" styleClass="colorLabel" />
+                </p:column> 
+                <p:column headerText="Repo..." width="3%" style="text-align: center">
+                    <h:outputText  value="#{proyVal.pryAutorizaEnvioRepos eq null ? null:proyVal.pryAutorizaEnvioRepos eq 'S' ? 'SI':'NO'}" styleClass="colorLabel" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

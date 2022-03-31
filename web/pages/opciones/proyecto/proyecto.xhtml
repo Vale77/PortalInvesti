@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{proyectoBean}"/>
+    </ui:define>
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{proyectoBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            .campoNoEditado.ui-state-disabled {font-weight: bold;background-color: #dbdbdb;opacity: 1.0;color: black}
+            body.layout-compact .ui-button.ui-button-icon-only{width: 24px;height: 24px}
+            body.layout-compact .ui-selectonemenuUASB .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            .ui-selectonemenuUASB.ui-state-disabled{background-color: #dbdbdb;opacity: 1.0;}
+            body.layout-compact .ui-dataTable-proy tbody tr {font-size: 11px;}
+            body.layout-compact .ui-dataTable-proy thead tr th{font-size: 12px;background-color: #e8e1e1;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;}
+            body .ui-datatable tbody tr.ui-datatable-odd.ui-state-highlight{background-color: #f3ae08;} 
+            .ui-panelgrid-blank.form-group .ui-panelgrid-cell{padding: 5px 10px;}
+            body.layout-compact .ui-column-filter.ui-inputfield{width: 95% !important;font-size: 11px;text-transform: uppercase}
+            body.layout-compact .ui-menuEstado {padding: 4px 0;}
+            body.layout-compact .ui-menuEstado .ui-menu-list li.ui-menuitem .ui-menuitem-link{font-size: 12px;line-height:13px}
+            .ui-icon-letra-a {background-image: url("#{resource['/images/circled-a-50.png']}") !important ;background-size: 20px 20px;}
+            .ui-icon-letra-x {background-image: url("#{resource['/images/circled-x-50.png']}") !important ;background-size: 20px 20px;}
+        </style>
+        <script>
+            var currentEvent;
+            $(document).ready(function () {
+                PrimeFaces.widget.ContextMenu.prototype.show = function (e) {
+                    //hide other contextmenus if any
+                    $(document.body).children('.ui-contextmenu:visible').hide();
+                    if (e) {
+                        currentEvent = e;
+                    }
+                    var win = $(window),
+                            left = e.pageX,
+                            top = e.pageY,
+                            width = this.jq.outerWidth(),
+                            height = this.jq.outerHeight();
+
+                    //collision detection for window boundaries
+                    if ((left + width) > (win.width()) + win.scrollLeft()) {
+                        left = left - width;
+                    }
+                    if ((top + height) > (win.height() + win.scrollTop())) {
+                        top = top - height;
+                    }
+                    if (this.cfg.beforeShow) {
+                        this.cfg.beforeShow.call(this);
+                    }
+                    this.jq.css({
+                        'left': left,
+                        'top': top,
+                        'z-index': ++PrimeFaces.zindex
+                    }).show();
+                    e.preventDefault();
+                };
+            });
+        </script>
+        <ui:param name="forma" value="#{proyectoBean}"/>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Proyectos de investigación</h3>
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                    <p:outputLabel for="selectOneMenuConvo" value="Convocatoria:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuConvo" value="#{proyectoBean.convocatoria}" tabindex="110"  styleClass="ui-selectonemenuUASB" 
+                                     converter="convocatoriaConverter" var="tabla" >
+                        <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{proyectoBean.listaConvocatorias}" var="convo" itemValue="#{convo}" itemDescription="#{''.concat(convo.cvoCodigo)}"
+                                       itemLabel="#{convo.inveTipoConvocatoria.tcvNombre}: #{proyectoBean.formatDate(convo.cvoFechaInicio)}  -  #{proyectoBean.formatDate(convo.cvoFechaFin)}  ----&gt; #{convo.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}"/>
+                        <p:column headerText="Tipo" width="10%">
+                            <h:outputText value="#{tabla.inveTipoConvocatoria.tcvNombre}"/>
+                        </p:column>
+                        <p:column headerText="Inicio" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{tabla.cvoFechaInicio ne null}">
+                                <f:param value="#{tabla.cvoFechaInicio}"/>
+                            </h:outputFormat>         
+                        </p:column>         
+                        <p:column headerText="Final" width="10%" style="text-align: center">
+                            <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{tabla.cvoFechaFin ne null}">
+                                <f:param value="#{tabla.cvoFechaFin}"/>
+                            </h:outputFormat>                      
+                        </p:column>  
+                        <p:column headerText="Estado" width="10%">
+                            <h:outputText value="#{tabla.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}" styleClass="colorLabel"
+                                          style="color:#{tabla.cvoEstado eq 'A' ? 'green':'red'};"/>
+                        </p:column>                        
+                        <p:ajax update="@parent,formProyectos,formMenuBar" listener="#{proyectoBean.retrieveBy}" resetValues="true"
+                                 oncomplete="PF('widgetProy').clearFilters();PF('widgetProy').filter();"/>
+                    </p:selectOneMenu>                
+                </p:panelGrid>
+            </div>
+        </h:form>
+        <h:form id="formProyectos">
+            <p:remoteCommand name="deSeleccionar" ignoreAutoUpdate="true" partialSubmit="true" oncomplete="PF('widgetProy').unselectAllRows();"
+                             action="#{proyectoBean.resetFilter()}"/>
+            <p:dataTable id="dataTableProy" var="proyecto" value="#{proyectoBean.listaProyectos}" selectionMode="single" reflow="true" 
+                         selection="#{proyectoBean.inveProyectoSelected}" rowKey="#{proyecto.pryCodigo}"  styleClass="ui-dataTable-proy"
+                         disabledSelection="#{proyecto.pryEstadoReg eq 'X'}"
+                         widgetVar="widgetProy" scrollable="true" scrollHeight="350" rowIndexVar="fila"
+                         filteredValue="#{proyectoBean.filteredProyectos}"
+                         emptyMessage="#{convoBean.anio eq null ? 'Seleccione la convocatoria' : proyectoBean.listaProyectos.size() == 0 ?'No existen proyectos registrados':''}">
+                <p:ajax event="rowSelect" update="@this :formContextual:menuContextual" listener="#{proyectoBean.onRowSelect}"/>
+                <p:ajax event="rowUnselect" update="@this :formContextual:menuContextual" listener="#{proyectoBean.onRowUnselect}"/>
+                <p:ajax event="contextMenu" update=":formContextual:menuContextual" listener="#{proyectoBean.onRowSelect}" oncomplete="PF('widgetVarCtx').show(currentEvent);"/>
+                <p:ajax event="filter"  onsuccess="deSeleccionar();" /> 
+                <p:column headerText="Ord." width="3%" style="text-align: center">
+                    <h:outputText value="#{fila+1}"/>
+                </p:column> 
+                <p:column headerText="Código" width="5%" style="text-align: center" filterBy="#{proyecto.pryCodigoCi}" sortBy="#{proyecto.pryCodigoCi}">
+                    <h:outputText value="#{proyecto.pryCodigoCi}"/>
+                </p:column>      
+                <p:column headerText="Título" width="51%"  filterBy="#{proyecto.pryTitulo}" sortBy="#{proyecto.pryTitulo}">
+                    <h:outputText value="#{proyecto.pryTitulo}" title="#{proyecto.pryCodigo}" style="text-transform: uppercase"/>
+                </p:column>       
+                <p:column headerText="Investigador" width="20%" sortBy="#{proyecto.prinPersona.perPrimerApellido} #{proyecto.prinPersona.perSegundoApellido}"
+                          filterBy="#{proyecto.prinPersona.perPrimerApellido} #{proyecto.prinPersona.perSegundoApellido}">
+                    <h:outputText value="#{proyecto.prinPersona.perPrimerApellido} #{proyecto.prinPersona.perSegundoApellido} #{proyecto.prinPersona.perNombres}"
+                                  style="text-transform: uppercase"/>
+                </p:column>                  
+                <p:column headerText="Fecha ingreso" width="8%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{proyecto.pryFechaCrea ne null}">
+                        <f:param value="#{proyecto.pryFechaCrea}"/>
+                    </h:outputFormat>         
+                </p:column>         
+                <p:column headerText="Estado" width="5%" style="text-align: center">
+                    <h:outputText value="#{proyecto.pryEstadoReg eq 'R' ? 'Registrado' : proyecto.pryEstadoReg eq 'A' ?'Aceptado':
+                                           proyecto.pryEstadoReg eq 'I' ?'Ingresado':proyecto.pryEstadoReg eq 'S' ?'Suspendido':'Retirado'}"
+                                  styleClass="colorLabel"
+                                  style="color:#{proyecto.pryEstadoReg eq 'R' ? 'crimson' : proyecto.pryEstadoReg eq 'A' ?'green':proyecto.pryEstadoReg eq 'I' ? 'blue':'red'}"/>
+                </p:column>                  
+                <p:column headerText="Área académica" width="20%" filterBy="#{proyecto.area.areaNombre}" filterMatchMode="contains">
+                    <h:outputText value="#{proyecto.area.areaNombre.substring(7)}"/>
+                </p:column>                
+                <p:column headerText="Pertinencia" width="8%" style="text-align: center">
+                    <h:outputText value="#{proyecto.inveCarta eq null ? '------' : proyecto.inveCarta.carEsPertinente eq null ? 'No procesada':proyecto.inveCarta.carEsPertinente eq 'S' ? 'SI':'NO'}"  styleClass="colorLabel"
+                                  style="color:#{proyecto.inveCarta eq null ? 'black' : proyecto.inveCarta.carEsPertinente eq null ? 'red' :proyecto.inveCarta.carEsPertinente eq 'S' ? 'green' : 'blue'}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        <h:form id="formContextual">
+            <p:contextMenu id="menuContextual" for="formProyectos:dataTableProy"  widgetVar="widgetVarCtx"  styleClass="ui-menuEstado" beforeShow="return true;">
+                <p:menuitem id="opcionRetiro" value="Retirar proyecto"  update="dlgEditAdic" icon="ui-icon-letra-x"
+                            disabled="#{proyectoBean.inveProyectoSelected.pryFechaEstado ne null or proyectoBean.inveProyectoSelected.pryEstadoReg eq 'S'}" 
+                            oncomplete="PF('dlgEditAdic').show();" action="#{proyectoBean.retirarProyecto()}">
+                </p:menuitem>
+                <p:menuitem value="Re-Activar"  update="dlgEditAdic" icon="ui-icon-letra-a" oncomplete="PF('dlgEditAdic').show()" 
+                            disabled="#{proyectoBean.inveProyectoSelected.pryEstadoReg ne 'S'}" action="#{proyectoBean.activarProyecto()}"/>
+            </p:contextMenu>     
+        </h:form>
+    </ui:define>
+</ui:composition>

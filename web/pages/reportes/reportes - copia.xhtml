@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../WEB-INF/template.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .colorLabel{color: #00444C;font-weight: bold;}
+            body.layout-compact .calendario .ui-inputfield {text-transform: uppercase;text-align: center;color: blue;font-size: 12px;}
+            body.layout-compact .calendario .ui-inputfield.ui-state-disabled{color: gainsboro;opacity: 1.0}
+            body.layout-compact .ui-selectonemenuAsist .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            .ui-panelgrid.form-group .ui-panelgrid-cell{padding: 5px 5px;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;}
+            body.layout-compact .ui-pdfPanel .ui-panel-content{padding: 3px 3px;background-color: beige}
+            body.layout-compact .commandButtonAdd{height: 24px;font-size: 12px;}
+            body.layout-compact .ui-selectOneListboxReps{line-height: 10px;}
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item{font-size: 12px;}
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item.ui-state-highlight{font-size: 14px;font-weight: bold;font-style: italic}   
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item.ui-state-disabled{font-weight: bold;color: blue; opacity: 1.0;padding-left: 5px; }
+            body.layout-compact .ui-selectOneListboxReps .ui-selectlistbox-item {padding: 6px 15px;}
+        </style>
+
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Reportes</h3>
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="10" layout="grid" styleClass="ui-panelgridSeleccion form-group">
+                    <style>
+                        .registros-radio .ui-state-disabled{font-weight: bold;
+                                                            opacity: #{listadoBean.reporte eq 'repCuadrosLectoresProy' or listadoBean.reporte eq 'repCuadrosLectoresInforFinal' ? '0.25':'1.0'} !important}
+                        </style>
+                        <p:outputLabel value="Filtros" styleClass="colorLabel"/>
+                        <h:panelGrid columns="3" >
+                            <p:outputLabel  value="Registros:" styleClass="colorLabel" style="font-size: 12px"/>
+                        <p:selectOneRadio id="selectOneRadioRegistros" value="#{listadoBean.opRadio}" columns="1" styleClass="registros-radio"
+                                          layout="grid" style="font-size: 12px;color:blue;">
+                            <f:selectItem itemValue="T" itemLabel="Por año"/>
+                            <f:selectItem itemValue="F" itemLabel="Por Fecha"
+                                          itemDisabled="#{listadoBean.reporte eq 'repCuadrosLectoresProy' or listadoBean.reporte eq 'repCuadrosLectoresInforFinal'}"/>
+                            <f:selectItem itemValue="C" itemLabel="Por Convocatoria"/>
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" style="font-size: 12px;padding-left: 5px;">
+                        <p:outputLabel for="selectOneMenuAnio" value="Año académico:" styleClass="colorLabel" style="opacity: #{listadoBean.opRadio eq 'T' ? '1.0':'0.50'}"/>
+                        <p:selectOneMenu id="selectOneMenuAnio" value="#{listadoBean.anio}" styleClass="ui-selectonemenuAsist" disabled="#{listadoBean.opRadio ne 'T'}"
+                                         required="true" requiredMessage="Año académico requerido">
+                            <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{listadoBean.listaAnios}" var="anio" itemValue="#{anio.anio}" itemLabel="#{anio.nombreCiclo}"/>
+                            <p:ajax  update="@form formOpc"/>
+                        </p:selectOneMenu>
+                        <p:message for="selectOneMenuAnio" display="icon" />
+                    </h:panelGrid>
+                         <h:panelGrid columns="3" style="font-size: 12px;padding-left: 5px;">
+                            <p:outputLabel for="selectOneMenuConvo" value="Convocatoria:" styleClass="colorLabel" style="opacity: #{listadoBean.opRadio eq 'C' ? '1.0':'0.50'}"/> 
+                            <p:selectOneMenu id="selectOneMenuConvo" value="#{proyectoBean.convocatoria}" tabindex="110"  styleClass="ui-selectonemenuUASB" 
+                                             converter="convocatoriaConverter" var="tabla" disabled="#{listadoBean.opRadio ne 'C'}" required="true"
+                                             requiredMessage="Periodo convocatoria requerida">
+                                <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{proyectoBean.listaConvocatorias}" var="convo" itemValue="#{convo}" itemDescription="#{''.concat(convo.cvoCodigo)}"
+                                               itemLabel="#{convo.inveTipoConvocatoria.tcvNombre}: #{proyectoBean.formatDate(convo.cvoFechaInicio)}  -  #{proyectoBean.formatDate(convo.cvoFechaFin)}  ----&gt; #{convo.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}"/>
+                                <p:column headerText="Tipo" width="10%">
+                                    <h:outputText value="#{tabla.inveTipoConvocatoria.tcvNombre}"/>
+                                </p:column>
+                                <p:column headerText="Inicio" width="10%" style="text-align: center">
+                                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{tabla.cvoFechaInicio ne null}">
+                                        <f:param value="#{tabla.cvoFechaInicio}"/>
+                                    </h:outputFormat>         
+                                </p:column>         
+                                <p:column headerText="Final" width="10%" style="text-align: center">
+                                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{tabla.cvoFechaFin ne null}">
+                                        <f:param value="#{tabla.cvoFechaFin}"/>
+                                    </h:outputFormat>                      
+                                </p:column>  
+                                <p:column headerText="Estado" width="10%">
+                                    <h:outputText value="#{tabla.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}" styleClass="colorLabel"
+                                                  style="color:#{tabla.cvoEstado eq 'A' ? 'green':'red'};"/>
+                                </p:column>                        
+                                <!--p:ajax update="@parent,formProyectos,formMenuBar" listener="#{proyectoBean.retrieveBy}" resetValues="true"
+                                        oncomplete="PF('widgetProy').clearFilters();PF('widgetProy').filter();"/-->
+                                <p:ajax  update="@form formOpc "/>
+                            </p:selectOneMenu>                                
+
+                        </h:panelGrid>
+                    <h:panelGrid id="pnlFechas" columns="2" columnClasses="colorLabel" cellpadding="0" cellspacing="0" style="font-size: 12px;padding-left: 20px;">
+                        <p:outputLabel value="Fecha de:" style="color:blue" 
+                                       rendered="#{listadoBean.opRadio eq 'F' and (listadoBean.reporte eq 'repEntregaInfoFinal' or listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal')}"/>
+                        <p:selectOneRadio  value="#{listadoBean.campoFecha}" columns="2" layout="grid" style="font-size: 12px;color:brown;"
+                                           rendered="#{listadoBean.opRadio eq 'F' and (listadoBean.reporte eq 'repEntregaInfoFinal' or listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal')}">
+                            <f:selectItem itemValue="registro" itemLabel="Entrega" />
+                            <f:selectItem itemValue="prorroga" 
+                                          itemLabel="#{listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal' ? 'Designación':'Emisión de Prorroga'}"/>
+                        </p:selectOneRadio>
+                        <p:outputLabel for="fechaDesde" value="Desde:" style="opacity: #{listadoBean.opRadio eq 'T' ? '0.5':'1.0' }"/>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0" >
+                            <p:calendar id="fechaDesde" value="#{listadoBean.fechaInicial}"  navigator="true"  styleClass="calendario" 
+                                        disabled="#{listadoBean.opRadio eq 'T' and listadoBean.opRadio eq 'C'}" 
+                                        pattern="dd-MMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                        required="true" requiredMessage="Fecha desde requerida">
+                                <!--p:ajax event="dateSelect" update="@this commandButtonBuscar fechaFin" oncomplete="PF('calendarWidget').setDate(null)" /-->    
+                            </p:calendar>
+                            <p:message for="fechaDesde" display="icon" />
+                        </h:panelGrid>   
+                        <p:outputLabel  for="fechaFin"  value="Hasta:" style="opacity: #{listadoBean.opRadio eq 'T' ? '0.5':'1.0'}"/>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0" >
+                            <p:calendar id="fechaFin" value="#{listadoBean.fechaFinal}"  navigator="true"  styleClass="calendario"
+                                        mindate="#{listadoBean.fechaInicial}" widgetVar="calendarWidget"
+                                        disabled="#{listadoBean.opRadio eq 'T' and listadoBean.opRadio eq 'C' }" 
+                                        pattern="dd-MMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                        required="true" requiredMessage="Fecha hasta requerida">
+                                <!--p:ajax event="dateSelect" update="@this commandButtonBuscar" /--> 
+                            </p:calendar>
+                            <p:message for="fechaFin" display="icon" />
+                        </h:panelGrid>
+                    </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <p:outputLabel  value="Lector:" styleClass="colorLabel" style="font-size: 12px"/>
+                            <p:selectOneMenu  id="selectOneMenuLector" value="#{listadoBean.lector}" styleClass="ui-selectonemenuAsist" style="width: 300px;"
+                                              converter="personaConverter" 
+                                              disabled="#{!(listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal' or listadoBean.reporte eq 'repValoracionLectura' or listadoBean.reporte eq 'repValoracionInfoFinal')}">
+                                <f:selectItem itemValue="#{null}" itemLabel="Todos"/>
+                                <f:selectItems value="#{listadoBean.listaLectores}" var="lec" itemValue="#{lec}"
+                                               itemLabel="#{lec.perPrimerApellido} #{lec.perSegundoApellido} #{lec.perNombres}" itemDescription="#{''.concat(lec.perCodigo)}"/>
+                                <!--p:ajax event="change" update="@this commandButtonBuscar @form" /-->            
+                            </p:selectOneMenu>                            
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <p:outputLabel for="@next"  value="Ocultar Investigador / Lector:" styleClass="colorLabel"  style="font-size: 12px"/>
+                            <h:panelGrid columns="2" >
+                                <p:selectBooleanCheckbox value="#{listadoBean.opOcultarInvest}">
+                                    <!--p:ajax event="change"/-->            
+                                </p:selectBooleanCheckbox>
+                                <p:outputLabel value="(Para ciertos reportes)" styleClass="colorLabel"
+                                               style="font-size: 11px; color: brown; opacity: #{!(listadoBean.reporte eq 'repEstadoGeneralLecturas') ? '0.5':'1.0'}"/>
+                            </h:panelGrid>                            
+                        </h:panelGrid>
+                             <p:commandButton id="commandButtonBuscar" value="Buscar" title="Generar reporte" styleClass="GreenButton commandButtonAdd" icon="ui-icon-search"
+                                         disabled="#{listadoBean.reporte eq null}" update="@form"
+                                         partialSubmit="true" action="#{listadoBean.search()}"  onstart="PF('statusReporte').show();"/> 
+                </p:panelGrid>
+            </div>
+        </h:form>
+        <p:layout style="min-height:500px; height: 550px">
+            <p:layoutUnit position="west" size="385">
+                <h:form id="formOpc1">
+                    <h:panelGrid  columns="1" >
+                        <h:panelGrid columns="2" >
+                            <p:outputLabel value="Reportes:" styleClass="colorLabel" />
+                            <p:outputLabel value="   (*Seleccione un reporte)" style="font-size: 9px; color: brown"/>
+                        </h:panelGrid>
+                        <p:selectOneListbox id="selectOneMenuTip" value="#{listadoBean.reporte}" style="width: 360px" scrollHeight="225" 
+                                            styleClass="ui-selectOneListboxReps" >
+                            <f:selectItems value="#{listadoBean.listaReportes}" var="rep" itemLabel="#{rep.label}" itemValue="#{rep.value}" />
+                            <p:ajax update="formOpc:pnlCondiciones" listener="#{listadoBean.resetFiltro()}" resetValues="true"/>
+                        </p:selectOneListbox>
+                    </h:panelGrid>
+                </h:form>
+                <h:form id="formOpc">
+                    <h:panelGrid id="pnlCondiciones" columns="1" >
+                        <style>
+                            .registros-radio .ui-state-disabled{font-weight: bold;
+                                                                opacity: #{listadoBean.reporte eq 'repCuadrosLectoresProy' or listadoBean.reporte eq 'repCuadrosLectoresInforFinal' ? '0.25':'1.0'} !important}
+                            </style>
+                            <p:outputLabel value="Filtros" styleClass="colorLabel"/>
+                            <h:panelGrid columns="3" >
+                                <p:outputLabel  value="Registros:" styleClass="colorLabel" style="font-size: 12px"/>
+                            <p:selectOneRadio id="selectOneRadioRegistros" value="#{listadoBean.opRadio}" columns="3" styleClass="registros-radio"
+                                              layout="grid" style="font-size: 12px;color:blue;">
+                                <f:selectItem itemValue="T" itemLabel="Por año"/>
+                                <f:selectItem itemValue="F" itemLabel="Por Fecha"
+                                              itemDisabled="#{listadoBean.reporte eq 'repCuadrosLectoresProy' or listadoBean.reporte eq 'repCuadrosLectoresInforFinal'}"/>
+                                <f:selectItem itemValue="C" itemLabel="Por Convocatoria"/>
+                                <p:ajax event="change" update="@this commandButtonBuscar @form" />            
+                            </p:selectOneRadio>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3" style="font-size: 12px;padding-left: 5px;">
+                            <p:outputLabel for="selectOneMenuAnio" value="Año académico:" styleClass="colorLabel" style="opacity: #{listadoBean.opRadio eq 'T' ? '1.0':'0.50'}"/>
+                            <p:selectOneMenu id="selectOneMenuAnio" value="#{listadoBean.anio}" styleClass="ui-selectonemenuAsist" disabled="#{listadoBean.opRadio ne 'T'}"
+                                             required="true" requiredMessage="Año académico requerido">
+                                <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{listadoBean.listaAnios}" var="anio" itemValue="#{anio.anio}" itemLabel="#{anio.nombreCiclo}"/>
+                                <p:ajax  update="@form formOpc"/>
+                            </p:selectOneMenu>
+                            <p:message for="selectOneMenuAnio" display="icon" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="3" style="font-size: 12px;padding-left: 5px;">
+                            <p:outputLabel for="selectOneMenuConvo" value="Convocatoria:" styleClass="colorLabel" style="opacity: #{listadoBean.opRadio eq 'C' ? '1.0':'0.50'}"/> 
+                            <p:selectOneMenu id="selectOneMenuConvo" value="#{proyectoBean.convocatoria}" tabindex="110"  styleClass="ui-selectonemenuUASB" 
+                                             converter="convocatoriaConverter" var="tabla" disabled="#{listadoBean.opRadio ne 'C'}" required="true"
+                                             requiredMessage="Periodo convocatoria requerida">
+                                <f:selectItem itemLabel="Seleccione una..." itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{proyectoBean.listaConvocatorias}" var="convo" itemValue="#{convo}" itemDescription="#{''.concat(convo.cvoCodigo)}"
+                                               itemLabel="#{convo.inveTipoConvocatoria.tcvNombre}: #{proyectoBean.formatDate(convo.cvoFechaInicio)}  -  #{proyectoBean.formatDate(convo.cvoFechaFin)}  ----&gt; #{convo.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}"/>
+                                <p:column headerText="Tipo" width="10%">
+                                    <h:outputText value="#{tabla.inveTipoConvocatoria.tcvNombre}"/>
+                                </p:column>
+                                <p:column headerText="Inicio" width="10%" style="text-align: center">
+                                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase"  rendered="#{tabla.cvoFechaInicio ne null}">
+                                        <f:param value="#{tabla.cvoFechaInicio}"/>
+                                    </h:outputFormat>         
+                                </p:column>         
+                                <p:column headerText="Final" width="10%" style="text-align: center">
+                                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{tabla.cvoFechaFin ne null}">
+                                        <f:param value="#{tabla.cvoFechaFin}"/>
+                                    </h:outputFormat>                      
+                                </p:column>  
+                                <p:column headerText="Estado" width="10%">
+                                    <h:outputText value="#{tabla.cvoEstado eq 'A' ? 'ACTIVO':'CERRADO'}" styleClass="colorLabel"
+                                                  style="color:#{tabla.cvoEstado eq 'A' ? 'green':'red'};"/>
+                                </p:column>                        
+                                
+                                <p:ajax  update="@form formOpc "/>
+                            </p:selectOneMenu>                                
+
+                        </h:panelGrid>
+                        <h:panelGrid id="pnlFechas" columns="2" columnClasses="colorLabel" cellpadding="0" cellspacing="0" style="font-size: 12px;padding-left: 20px;">
+                            <p:outputLabel value="Fecha de:" style="color:blue" 
+                                           rendered="#{listadoBean.opRadio eq 'F' and (listadoBean.reporte eq 'repEntregaInfoFinal' or listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal')}"/>
+                            <p:selectOneRadio  value="#{listadoBean.campoFecha}" columns="2" layout="grid" style="font-size: 12px;color:brown;"
+                                               rendered="#{listadoBean.opRadio eq 'F' and (listadoBean.reporte eq 'repEntregaInfoFinal' or listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal')}">
+                                <f:selectItem itemValue="registro" itemLabel="Entrega" />
+                                <f:selectItem itemValue="prorroga" 
+                                              itemLabel="#{listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal' ? 'Designación':'Emisión de Prorroga'}"/>
+                            </p:selectOneRadio>
+                            <p:outputLabel for="fechaDesde" value="Desde:" style="opacity: #{listadoBean.opRadio eq 'T' ? '0.5':'1.0' }"/>
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0" >
+                                <p:calendar id="fechaDesde" value="#{listadoBean.fechaInicial}"  navigator="true"  styleClass="calendario" 
+                                            disabled="#{listadoBean.opRadio eq 'T' and listadoBean.opRadio eq 'C'}" 
+                                            pattern="dd-MMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                            required="true" requiredMessage="Fecha desde requerida">
+                                    <p:ajax event="dateSelect" update="@this commandButtonBuscar fechaFin" oncomplete="PF('calendarWidget').setDate(null)" />    
+                                </p:calendar>
+                                <p:message for="fechaDesde" display="icon" />
+                            </h:panelGrid>   
+                            <p:outputLabel  for="fechaFin"  value="Hasta:" style="opacity: #{listadoBean.opRadio eq 'T' ? '0.5':'1.0'}"/>
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0" >
+                                <p:calendar id="fechaFin" value="#{listadoBean.fechaFinal}"  navigator="true"  styleClass="calendario"
+                                            mindate="#{listadoBean.fechaInicial}" widgetVar="calendarWidget"
+                                            disabled="#{listadoBean.opRadio eq 'T' and listadoBean.opRadio eq 'C' }" 
+                                            pattern="dd-MMM-yyyy"  locale="es" timeZone="America/Guayaquil" readonlyInput="true"  showOn="button" autocomplete="off"
+                                            required="true" requiredMessage="Fecha hasta requerida">
+                                    <p:ajax event="dateSelect" update="@this commandButtonBuscar" /> 
+                                </p:calendar>
+                                <p:message for="fechaFin" display="icon" />
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="2">
+                            <p:outputLabel  value="Lector:" styleClass="colorLabel" style="font-size: 12px"/>
+                            <p:selectOneMenu  id="selectOneMenuLector" value="#{listadoBean.lector}" styleClass="ui-selectonemenuAsist" style="width: 300px;"
+                                              converter="personaConverter" 
+                                              disabled="#{!(listadoBean.reporte eq 'repEstadoGeneralLecturas' or listadoBean.reporte eq 'repEstadoGeneralInfoFinal' or listadoBean.reporte eq 'repValoracionLectura' or listadoBean.reporte eq 'repValoracionInfoFinal')}">
+                                <f:selectItem itemValue="#{null}" itemLabel="Todos"/>
+                                <f:selectItems value="#{listadoBean.listaLectores}" var="lec" itemValue="#{lec}"
+                                               itemLabel="#{lec.perPrimerApellido} #{lec.perSegundoApellido} #{lec.perNombres}" itemDescription="#{''.concat(lec.perCodigo)}"/>
+                                <p:ajax event="change" update="@this commandButtonBuscar @form" />            
+                            </p:selectOneMenu>                            
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <p:outputLabel for="@next"  value="Ocultar Investigador / Lector:" styleClass="colorLabel"  style="font-size: 12px"/>
+                            <h:panelGrid columns="2" >
+                                <p:selectBooleanCheckbox value="#{listadoBean.opOcultarInvest}">
+                                    <p:ajax event="change"/>            
+                                </p:selectBooleanCheckbox>
+                                <p:outputLabel value="(Para ciertos reportes)" styleClass="colorLabel"
+                                               style="font-size: 11px; color: brown; opacity: #{!(listadoBean.reporte eq 'repEstadoGeneralLecturas') ? '0.5':'1.0'}"/>
+                            </h:panelGrid>                            
+                        </h:panelGrid>
+                        <p:commandButton id="commandButtonBuscar" value="Buscar" title="Generar reporte" styleClass="GreenButton commandButtonAdd" icon="ui-icon-search"
+                                         disabled="#{listadoBean.reporte eq null}" update="@form"
+                                         partialSubmit="true" action="#{listadoBean.search()}"  onstart="PF('statusReporte').show();"/>     
+                    </h:panelGrid>
+                </h:form>
+            </p:layoutUnit>
+            <p:layoutUnit position="center" size="455">
+                <p:panel id="pdfPanel" visible="#{listadoBean.repEmbebVisible}" styleClass="ui-pdfPanel" style="height: 100%;width: 100%">
+                    <p:media height="100%" width="100%" zoom="75" player="pdf"
+                             value="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}/ServletImpr/Print?#{sessionScope.urlRep}">
+                    </p:media>
+                    <!--object id="documento" type="application/pdf"  height="100%" width="100%" 
+                            data="#{facesContext.externalContext.requestScheme}://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}/ServletImpr/Print?#{sessionScope.urlRep}">Su explorador no soporta visualizar archivos PDF. Puede descargarlos.
+                    </object-->
+                </p:panel>
+            </p:layoutUnit>
+        </p:layout>
+        <p:dialog widgetVar="statusReporte" draggable="false" closable="false" showHeader="false"  onHide="myStopFunction();" onShow="myFunction();"  resizable="false" >
+            <h:panelGrid columns="2" >  
+                <h:graphicImage library="images" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>  
+                <h:outputText value="Por favor espere, esto puede tardar algunos minutos..." style="white-space: nowrap;"/>  
+            </h:panelGrid>    
+        </p:dialog>
+        <script type="text/javascript" language="javascript">
+            var myVar;
+            function myFunction() {
+                myVar = setTimeout(function () {
+                    PF('statusReporte').hide()
+                }, 3000);
+            }
+            function myStopFunction() {
+                clearTimeout(myVar);
+            }
+        </script>
+    </ui:define>
+</ui:composition>

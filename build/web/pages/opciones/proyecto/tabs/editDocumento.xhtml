@@ -1,0 +1,46 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        body.layout-compact .ui-datatableGen thead tr th{font-size: 13px;background-color: #e8e1e1;}
+        body.layout-compact .ui-datatableGen tbody tr.ui-widget-content td{padding: 5px 5px;font-size: 12px;}
+        body.layout-compact .ui-datatableGen .ui-datatable-header{padding: 0px 0px;}
+        body.layout-compact .ui-datatableGen{height: 200px;}
+        body.layout-compact .ui-datatableGen.ui-datatable-scrollable thead tr th{font-size: 14px;background-color: #e8e1e1;padding: 5px 5px;}
+        .col1HdTabla1{text-align: left;width: 80%}
+        .col2HdTabla1{text-align: right;width: 10%}
+    </style>
+
+    <p:dataTable id="dataTableDocu" var="doc" value="#{forma.listaDocumentos}" selectionMode="single" 
+                 rowKey="#{doc.docCodigo}" widgetVar="widgetVardataTableDocu"
+                 rowIndexVar="ordinal" styleClass="ui-datatableGen">
+        <p:column headerText="N°" width="5%" style="text-align: center">
+            <h:outputText value="#{ordinal+1}" />                                                
+        </p:column>         
+        <p:column headerText="Tipo Documento"  width="15%" >
+            <h:outputText value="#{doc.prinClaseDocumento.clsDocumento}"/>
+        </p:column>
+        <p:column headerText="Documento"  width="70%">
+            <h:outputText value="#{doc.docNombre}" />
+        </p:column>
+        <p:column width="10%" style="text-align: center">
+            <p:commandButton id="commandButtonDocs" value="Cargar" styleClass="GreenButton commandButtonAdd"  inline="true"
+                              rendered="#{forma.convocatoria.cvoEstado eq 'A'}"
+                             onstart="PF('widgetVardataTableDocu').unselectAllRows();PF('widgetVardataTableDocu').selectRow(#{ordinal});"
+                             oncomplete="PF('dlgEditAdic').show();"  immediate="true" partialSubmit="true" update="dlgEditAdic"
+                             actionListener="#{forma.processAddButton}" >
+                <f:attribute name="documento" value="#{doc}"/>
+            </p:commandButton>
+        </p:column>
+        <!--p:column width="5%" style="text-align: center">
+            <p:commandButton id="commandButtonDelDocs" icon="ui-icon-delete" title="Eliminar Registro" immediate="true"
+                             actionListener="#{forma.processDelButton}"  partialSubmit="true" 
+                             rendered="#{forma.vincDocumentoSelected.docCodigo eq doc.docCodigo}"/>
+        </p:column-->
+    </p:dataTable>  
+
+</ui:composition>

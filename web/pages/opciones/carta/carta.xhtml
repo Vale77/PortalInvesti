@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../../WEB-INF/template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="menuBar">
+        <ui:param name="backingBean" value="#{cartaBean}"/>
+    </ui:define>
+    <ui:define name="pantallaEdicion">
+        <ui:param name="backingBean" value="#{cartaBean}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .campoNoEditado.ui-state-disabled {font-weight: bold;opacity: 1.0;color: black}
+            .colorLabel{color: #00444C;font-weight: bold;}
+            body.layout-compact .ui-button.ui-button-icon-only{width: 24px;height: 24px}
+            body.layout-compact .ui-selectonemenuUASB .ui-selectonemenu-label{font-size: 12px;color: blue} 
+            body.layout-compact .ui-selectonemenuUASB.ui-state-disabled {opacity: 1.0;} 
+            body.layout-compact .ui-dataTable-carta tbody tr {font-size: 11px;}
+            body.layout-compact .ui-dataTable-carta thead tr th{font-size: 12px;background-color: #e8e1e1;}
+            .ui-datatable-empty-message{color:red;font-weight: bold;font-size: 14px}
+            body .ui-datatable tbody tr.ui-datatable-odd.ui-state-highlight{background-color: #f3ae08;} 
+            .ui-panelgridSeleccion{font-size: 12px}
+            .ui-panelgridSeleccion.form-group .ui-panelgrid-cell{padding: 5px 5px;}
+            .colAncho150{width: 150px;}
+            .colAncho40{width: 40px}
+            .colAncho300{width: 300px}
+            body.layout-compact .ui-column-filter.ui-inputfield{width: 95% !important;font-size: 11px;text-transform: uppercase}
+        </style>
+    </ui:define>    
+
+    <ui:define name="content">
+        <h3 style="color: brown;text-transform: uppercase">Carta de pertinencia y constancias</h3>
+        <h:form id="form">
+            <div id="contenido" class="ui-g">
+                <p:panelGrid columns="8" layout="grid" styleClass="ui-panelgridSeleccion form-group">
+                    <p:outputLabel for="selectOneMenuArea" value="Área:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuArea" value="#{cartaBean.areaCodigo}" tabindex="1"  styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccione una..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{cartaBean.listaAreas}" var="area" itemValue="#{area.areaCodigo}" itemLabel="#{area.areaNombre}"  itemDescription="#{''.concat(area.areaCodigo)}"/>
+                        <p:ajax  update="@form,formCarta,formMenuBar" listener="#{cartaBean.retrieveBy('area')}"/>
+                    </p:selectOneMenu>   
+                    <p:outputLabel for="selectOneMenuAnio" value="Año académico:" styleClass="colorLabel"/>
+                    <p:selectOneMenu id="selectOneMenuAnio" value="#{cartaBean.anio}" tabindex="2"  styleClass="ui-selectonemenuUASB">
+                        <f:selectItem itemLabel="Seleccione uno..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{cartaBean.listaAnios}" var="anio" itemValue="#{anio.anio}" itemLabel="#{anio.nombreCiclo}"/>
+                        <p:ajax  update="@form,formCarta,formMenuBar" listener="#{cartaBean.retrieveBy('')}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+            </div>
+        </h:form>
+        <h:form id="formCarta">
+            <p:dataTable id="dataTableCarta" var="carta" value="#{cartaBean.listaCartas}" selectionMode="single" reflow="true" 
+                         selection="#{cartaBean.cartaSelected}" rowKey="#{carta.pryCodigo}"  styleClass="ui-dataTable-carta"
+                         sortBy="#{carta.inveProyecto.pryCodigoCi}"
+                         widgetVar="widgetCarta" scrollable="true" scrollHeight="350" rowIndexVar="fila"  filteredValue="#{cartaBean.filteredCartas}"
+                         emptyMessage="#{convoBean.anio eq null ? 'Seleccione el año de consulta' : cartaBean.listaCartas.size() == 0 ?'No existen cartas registradas':''}">
+                <p:ajax event="rowSelect" process="@this" update="@this" listener="#{cartaBean.onRowSelect}"/>
+                <p:ajax event="rowUnselect" process="@this" update="@this" listener="#{cartaBean.onRowUnselect}"/>
+                <p:ajax event="filter" listener="#{cartaBean.onFilter}"/> 
+                <p:column headerText="Ord." width="3%" style="text-align: center">
+                    <h:outputText value="#{fila+1}"/>
+                </p:column> 
+                <p:column headerText="Código" width="5%" style="text-align: center" filterBy="#{carta.inveProyecto.pryCodigoCi}" sortBy="#{carta.inveProyecto.pryCodigoCi}">
+                    <h:outputText value="#{carta.inveProyecto.pryCodigoCi}"/>
+                </p:column> 
+                <p:column headerText="Título" width="40%"  filterBy="#{carta.inveProyecto.pryTitulo}" sortBy="#{carta.inveProyecto.pryTitulo}">
+                    <h:outputText value="#{carta.inveProyecto.pryTitulo}" style="text-transform: uppercase"/>
+                </p:column>                 
+                <p:column headerText="Fecha solic." width="8%" style="text-align: center" sortBy="#{carta.carFechaCrea}">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase">
+                        <f:param value="#{carta.carFechaCrea}"/>
+                    </h:outputFormat>         
+                </p:column>    
+                <p:column headerText="Investigador" width="17%" sortBy="#{carta.inveProyecto.prinPersona.perPrimerApellido} #{carta.inveProyecto.prinPersona.perSegundoApellido}"
+                          filterBy="#{carta.inveProyecto.prinPersona.perPrimerApellido} #{carta.inveProyecto.prinPersona.perSegundoApellido}">
+                    <h:outputText value="#{carta.inveProyecto.prinPersona.perPrimerApellido} #{carta.inveProyecto.prinPersona.perSegundoApellido} #{carta.inveProyecto.prinPersona.perNombres}"
+                                  style="text-transform: uppercase"/>
+                </p:column>   
+                <p:column headerText="Categoría" width="12%" filterBy="#{carta.inveProyecto.prinCategoriaInvest.caiDescripcion}">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('widgetCarta').filter()" styleClass="ui-selectonemenuUASB" style="min-width: 90%">
+                            <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItems value="#{cartaBean.listaCateg}" var="cat" itemValue="#{cat.caiDescripcion}" itemLabel="#{cat.caiDescripcion}"/>
+                        </p:selectOneMenu>
+                    </f:facet> 
+                    <h:outputText value="#{carta.inveProyecto.prinCategoriaInvest.caiDescripcion}"/>
+                </p:column>
+                <p:column headerText="Estado" width="8%" style="text-align: center" filterMatchMode="exact"
+                          filterBy="#{carta.carEsPertinente eq null ? 'No procesada' : carta.carEsPertinente eq 'S' ?'Pertinente':'No pertinente'}">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('widgetCarta').filter()" styleClass="ui-selectonemenuUASB">
+                            <f:selectItem itemLabel="Todas" itemValue="#{null}" noSelectionOption="true" />
+                            <f:selectItem itemLabel="No procesada" itemValue="No procesada"/>
+                            <f:selectItem itemLabel="Pertinente" itemValue="Pertinente"/>
+                            <f:selectItem itemLabel="No pertinente" itemValue="No pertinente"/>
+                        </p:selectOneMenu>
+                    </f:facet>                          
+                    <h:outputText value="#{carta.carEsPertinente eq null ? 'No procesada' : carta.carEsPertinente eq 'S' ?'Pertinente':'No pertinente'}"
+                                  styleClass="colorLabel"
+                                  style="color:#{carta.carEsPertinente eq null ? 'blue' : carta.carEsPertinente eq 'S'  ?'green':'red'}"/>
+                </p:column>                  
+                <p:column headerText="Pertinencia" width="7%" style="text-align: center">
+                    <h:outputFormat value="{0,Date,dd-MMM-yyyy}" styleClass="colorLabel" style="color:blue;text-transform: uppercase" rendered="#{carta.carFechaPertinencia ne null}">
+                        <f:param value="#{carta.carFechaPertinencia}"/>
+                    </h:outputFormat>         
+                </p:column>     
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="viewDialog" widgetVar="viewWidget" modal="true" responsive="true"  header="Documento" closeOnEscape="true" 
+                  dynamic="true" position="center"  draggable="false" resizable="false" 
+                  showEffect="explode" hideEffect="explode" width="70%" height="400" >
+            <!--p:ajax event="close" listener="#{backingBean.handleClose}" immediate="true" partialSubmit="true" /-->
+            <iframe  src="https://docs.google.com/gview?url=http://aplicaciones.uasb.edu.ec:8080/App/#{cartaBean.docPry.docNombre}#{cartaBean.embedded}" 
+                     frameborder="1" height="100%" width="100%"></iframe>
+            <!--object data="http://localhost:8080/ServletImpr/PrintDoc?reporte=JMG&amp;subsist=investigacion"
+                    type="application/msword" /-->
+        </p:dialog>
+    </ui:define>
+
+
+</ui:composition>

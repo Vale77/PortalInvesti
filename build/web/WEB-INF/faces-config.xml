@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    
+    <application>
+        <!-- locale application properties -->
+        <resource-bundle>
+            <base-name>i18n_es_EC</base-name>
+            <var>i18n</var>
+        </resource-bundle>
+        <!--message-bundle>i18n</message-bundle-->
+        <locale-config>
+            <default-locale>es_EC</default-locale>
+            <!--supported-locale>en_US</supported-locale-->
+        </locale-config>
+    </application>
+    
+    <navigation-rule>
+        <from-view-id>/*</from-view-id>
+        <navigation-case>
+            <from-outcome>sessionExpired</from-outcome>
+            <to-view-id>/error/sessionExpired.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/*</from-view-id>
+        <navigation-case>
+            <from-outcome>sinAcceso</from-outcome>
+            <to-view-id>/error/access.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <lifecycle>
+        <phase-listener>ec.edu.uasb.investigacion.security.AuthorizationExtendedListener</phase-listener>
+    </lifecycle>    
+    <factory>
+        <exception-handler-factory>ec.edu.uasb.security.ViewExpiredExceptionExceptionHandlerFactory</exception-handler-factory>
+    </factory>   
+    
+    <managed-bean>
+        <managed-bean-name>currentDate</managed-bean-name>
+        <managed-bean-class>java.util.Date</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>          
+    <managed-bean>
+        <managed-bean-name>hoy</managed-bean-name>
+        <managed-bean-class>org.joda.time.LocalDate</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>                  
+    <!--name>primefaces_ultima</name>
+    <component>
+        <component-type>org.primefaces.component.UltimaMenu</component-type>
+        <component-class>org.primefaces.ultima.component.menu.UltimaMenu</component-class>
+    </component>
+    <render-kit>
+        <renderer>
+            <component-family>org.primefaces.component</component-family>
+            <renderer-type>org.primefaces.component.UltimaMenuRenderer</renderer-type>
+            <renderer-class>org.primefaces.ultima.component.menu.UltimaMenuRenderer</renderer-class>
+        </renderer>
+    </render-kit-->
+</faces-config>

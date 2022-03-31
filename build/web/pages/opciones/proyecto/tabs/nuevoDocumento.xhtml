@@ -1,0 +1,29 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <style>
+        body.layout-compact .ui-fileupload .ui-fileupload-buttonbar{padding: 0px;background-color: transparent;border: none}
+        body.layout-compact .ui-fileupload .ui-fileupload-buttonbar .ui-button{font-size: 12px;}
+        .ui-fileupload-content{padding: 0px 0px;}
+        .ui-fileupload-messages{font-size: 11px;}
+        .ui-fileupload-files{margin: 0px 0px;}
+    </style>
+    <p:panel id="grid" style=" border: none">
+        <p:fileUpload fileUploadListener="#{forma.subirAchivo}" mode="advanced" update="grid" immediate="true" fileLimit="1"
+                      fileLimitMessage="Solo se permite 1 archivo a la vez" style="width: 725px" previewWidth="120" 
+                      allowTypes="/(\.|\/)(doc|docx|pdf)$/" sizeLimit="15360000"  invalidFileMessage="Archivo no valido" 
+                      label="Seleccionar documento" dragDropSupport="false" cancelLabel="Cancelar" uploadLabel="Cargar"
+                      invalidSizeMessage="Tamaño no permitido del archivo:&lt;/br&gt;" >
+        </p:fileUpload>     
+         <!--p:fileUpload fileUploadListener="#{forma.subirAchivo}" mode="advanced" update="grid" immediate="true" fileLimit="1"
+                      fileLimitMessage="Solo se permite 1 archivo a la vez" style="width: 725px" previewWidth="120" 
+                      allowTypes="/(\.|\/)(doc|docx|jpe?g|png)$/" sizeLimit="2000000"  invalidFileMessage="Archivo no valido" 
+                      label="Seleccionar documento" dragDropSupport="false" cancelLabel="Cancelar" uploadLabel="Cargar"
+                      invalidSizeMessage="Tamaño no permitido del archivo:&lt;/br&gt;" >
+        </p:fileUpload-->   
+    </p:panel>
+</ui:composition>

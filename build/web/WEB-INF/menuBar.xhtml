@@ -1,0 +1,49 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <h:form id="formMenuBar" rendered="#{backingBean.tieneMenuBar}"> 
+        <p:menubar id="tb">
+            <p:menuitem value="Salvar" icon="ui-icon-save" title="Guardar datos" rendered="#{backingBean.visibleSave}"
+                        actionListener="#{backingBean.updateButton_processAction}" update="form @form">
+                <p:confirm header="Confirmación: datos modificados"  icon="ui-icon-warning"  message="Esta usted seguro de salvarlos ?"/>
+            </p:menuitem>
+            <p:menuitem value="Nuevo" icon="ui-icon-plus" title="Nuevo registro" disabled="#{backingBean.disabledNew}" 
+                        partialSubmit="true" immediate="true" rendered="#{backingBean.visibleNew}"
+                        action="#{backingBean.opcionItem('insertar')}" onclick="PF('dlgEdit').show();" update="confirmDlg formEdit"/>
+            <p:menuitem value="Editar" icon="ui-icon-edit" title="Editar registro" disabled="#{backingBean.disabledEdit}"
+                        partialSubmit="true" immediate="true" rendered="#{backingBean.visibleEdit}"
+                        action="#{backingBean.opcionItem('actualizar')}" onclick="PF('dlgEdit').show();"  update="confirmDlg formEdit"/>
+            <p:menuitem value="Buscar" icon="ui-icon-search" action="#{backingBean.search()}" disabled="#{backingBean.disabledSearch}"
+                        rendered="#{backingBean.visibleSearch}" partialSubmit="true" immediate="true"/>
+            <p:menuitem value="Refrescar" icon="ui-icon-refresh" action="#{backingBean.init()}" update="form @form" partialSubmit="true" immediate="true"/>
+            <p:menuitem value="Eliminar" icon="ui-icon-close" title="Eliminar registro señalado"  disabled="#{backingBean.disabledDelete}"
+                        rendered="#{backingBean.visibleDelete}"
+                        actionListener="#{backingBean.deleteButton_processAction}" update="@form">
+                <p:confirm header="Confirmación: eliminar registro"  icon="ui-icon-warning"  message="Esta usted seguro ?"/>
+            </p:menuitem>
+            <p:menuitem value="Imprimir" icon="ui-icon-print" update=":pdfDialog" oncomplete="PF('pdfWidget').show();"
+                        actionListener="#{backingBean.print()}" rendered="#{backingBean.visiblePrint}"/>  
+            <p:menuitem value="Cancelar" icon="ui-icon-cancel" action="/pages/principal"/>
+        </p:menubar>
+        <p:sticky target="tb" />
+    </h:form>
+    <style>
+        #confirmDlg .ui-dialog-content{text-align: center;font-weight:bold;color: darkblue;}
+    </style> 
+
+    <p:confirmDialog id="confirmDlg" global="true" showEffect="fade" hideEffect="fade"  responsive="true" widgetVar="confirmDlg" >
+        <f:facet name="message">
+            <p:outputPanel>
+                <h:outputFormat id="xx" value="#{backingBean.msgDlg}" escape="false" />
+            </p:outputPanel>
+        </f:facet>            
+        <p:commandButton value="Si" styleClass="ui-confirmdialog-yes GreenButton" icon="ui-icon-check" />
+        <p:commandButton value="No" styleClass="ui-confirmdialog-no RedButton" icon="ui-icon-close" />
+    </p:confirmDialog>   
+
+</ui:composition>

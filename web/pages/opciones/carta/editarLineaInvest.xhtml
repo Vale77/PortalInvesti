@@ -1,0 +1,43 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <style>
+        ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+            text-transform: lowercase;
+        }
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            text-transform: lowercase;
+        }
+        ::-moz-placeholder { /* Mozilla Firefox 19+ */
+            text-transform: lowercase;
+        }
+        :-ms-input-placeholder { /* Internet Explorer 10-11 */
+            text-transform: lowercase;
+        }
+        ::-ms-input-placeholder { /* Microsoft Edge */
+           text-transform: lowercase;
+        }
+        ::placeholder { /* Most modern browsers support this now. */
+           text-transform: lowercase;
+        }
+
+    </style>
+
+    <p:focus context="grid" />
+    <p:panelGrid id="grid" columns="2"  styleClass="ui-panelgrid-blank  form-group">
+        <p:outputLabel for="nombre" value="Nueva línea:" styleClass="colorLabel"/>
+        <p:panelGrid columns="2" >
+            <p:inputText id="nombre"  value="#{cartaBean.inveLineaInvestProyec.lipNombre}" style="color: #2196F3;width: 600px;text-transform: uppercase" 
+                         required="true" requiredMessage="Línea de investigación requerida" onfocus="this.setSelectionRange(0, this.value.length)"
+                         maxlength="1000" autocomplete="off">
+                <p:ajax event="change"/>
+                <f:validator validatorId="ec.edu.uasb.validator.NoVacioValidator"/>
+                <p:watermark for="nombre" value="ingrese la línea de investigación" id="watermarkRazon"/>
+            </p:inputText>
+            <p:message for="nombre" display="icon" />
+        </p:panelGrid>
+    </p:panelGrid>
+</ui:composition>
